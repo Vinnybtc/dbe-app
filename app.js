@@ -189,6 +189,8 @@ const App = (() => {
       case 'pods': loadPods(); break;
       case 'educatie': loadEducatie(); break;
       case 'feed': loadFeed(); break;
+      case 'videos': loadVideos(); break;
+      case 'chatbot': loadChatbot(); break;
       case 'admin': loadAdmin(); break;
     }
   }
@@ -1774,21 +1776,26 @@ const App = (() => {
 
   const DEMO_FEED = [
     { type: 'article', title: 'Bitcoin breekt $100k grens', excerpt: 'Na maanden van consolidatie heeft Bitcoin eindelijk de psychologische grens doorbroken.', author: 'Jeroen Blokland', date: '2026-04-09' },
+    { type: 'video', title: 'Lightning Network uitgelegd in 5 minuten', excerpt: 'Onno Langbroek legt uit hoe Lightning werkt en waarom het belangrijk is.', author: 'Onno Langbroek', date: '2026-04-07', videoId: 'demo' },
     { type: 'event_recap', title: 'Recap: Monthly Meetup Maart', excerpt: '56 aanwezigen, 3 presentaties, en een onvergetelijke avond. Lees het verslag.', author: 'Bram Kanstein', date: '2026-04-02' },
     { type: 'spotlight', title: 'Member Spotlight: Morris Verdonk', excerpt: 'Van IT-security naar Bitcoin custody. Hoe Morris zijn expertise inzet voor de community.', author: 'DBE Redactie', date: '2026-03-28' },
     { type: 'analysis', title: 'Macro Weekly: Fed, ETF flows & halving', excerpt: 'Wekelijkse analyse van de belangrijkste Bitcoin macro-ontwikkelingen.', author: 'Khing Oei', date: '2026-03-25', exclusive: true },
+    { type: 'article', title: 'Bitcoin mining in Nederland: de stand van zaken', excerpt: 'Een overzicht van de mining industrie in NL, regelgeving, en kansen.', author: 'Nelis van de Wiel', date: '2026-03-20' },
   ];
+
+  let activeFeedFilter = 'alle';
 
   async function loadFeed() {
     const list = document.getElementById('feed-list');
     const feed = DEV_MODE ? DEMO_FEED : [];
+    const filtered = activeFeedFilter === 'alle' ? feed : feed.filter(f => f.type === activeFeedFilter);
 
-    if (!feed.length) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128240;</div><div class="empty-state-text">Nog geen berichten</div></div>';
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128240;</div><div class="empty-state-text">Geen content voor dit filter</div></div>';
       return;
     }
 
-    list.innerHTML = feed.map(f => `
+    list.innerHTML = filtered.map(f => `
       <div class="feed-card">
         <div class="feed-meta">
           <span class="feed-type">${f.type.replace('_', ' ')}</span>
@@ -1799,6 +1806,121 @@ const App = (() => {
         <div class="market-title">${escapeHtml(f.title)}</div>
         <div class="market-desc">${escapeHtml(f.excerpt)}</div>
       </div>`).join('');
+  }
+
+  function initFeedFilters() {
+    document.getElementById('feed-tags')?.addEventListener('click', (e) => {
+      const tag = e.target.closest('.tag');
+      if (!tag) return;
+      activeFeedFilter = tag.dataset.cat;
+      document.querySelectorAll('#feed-tags .tag').forEach(t => t.classList.toggle('active', t.dataset.cat === activeFeedFilter));
+      loadFeed();
+    });
+  }
+
+  // --- Feature: YouTube / Video's ---
+
+  const DEMO_VIDEOS = [
+    { id: 'v1', video_id: 'GpYgZBls5fQ', title: 'What is Bitcoin? (Simply Explained)', thumbnail_url: 'https://img.youtube.com/vi/GpYgZBls5fQ/mqdefault.jpg', channel_name: 'Simply Explained', published_at: '2026-03-15', is_curated: true, is_featured: true, tags: ['beginner'], ai_summary: 'Een heldere uitleg van Bitcoin voor beginners: hoe het werkt, waarom het waardevol is, en hoe mining de blockchain beveiligt.' },
+    { id: 'v2', video_id: 'rrr_zPmEiME', title: 'How the Bitcoin Lightning Network Works', thumbnail_url: 'https://img.youtube.com/vi/rrr_zPmEiME/mqdefault.jpg', channel_name: 'Simply Explained', published_at: '2026-03-10', is_curated: true, is_featured: false, tags: ['lightning', 'gevorderd'], ai_summary: 'Technische uitleg van het Lightning Network: payment channels, routing, en hoe het Bitcoin schaalbaar maakt.' },
+    { id: 'v3', video_id: 'bBC-nXj3Ng4', title: 'But how does bitcoin actually work?', thumbnail_url: 'https://img.youtube.com/vi/bBC-nXj3Ng4/mqdefault.jpg', channel_name: '3Blue1Brown', published_at: '2026-02-28', is_curated: true, is_featured: true, tags: ['technisch', 'cryptografie'], ai_summary: 'Diepgaande wiskundige uitleg van Bitcoin: SHA-256 hashing, proof of work, en digitale handtekeningen.' },
+    { id: 'v4', video_id: 'demo1', title: 'DBE Meetup Maart 2026 - Samenvatting', thumbnail_url: null, channel_name: 'Dutch Bitcoin Embassy', published_at: '2026-04-01', is_curated: false, is_featured: false, is_member: true, tags: ['dbe', 'event'], ai_summary: null },
+    { id: 'v5', video_id: 'demo2', title: 'Bitcoin Node Setup Tutorial (Nederlands)', thumbnail_url: null, channel_name: 'Onno Langbroek', published_at: '2026-03-20', is_curated: false, is_featured: false, is_member: true, tags: ['technisch', 'node'], ai_summary: 'Stap-voor-stap handleiding voor het opzetten van een Bitcoin full node met Umbrel op een Raspberry Pi.' },
+  ];
+
+  let activeVideoFilter = 'alle';
+
+  async function loadVideos() {
+    const list = document.getElementById('video-list');
+    let videos = DEV_MODE ? DEMO_VIDEOS : [];
+
+    if (activeVideoFilter === 'member') videos = videos.filter(v => v.is_member);
+    else if (activeVideoFilter === 'curated') videos = videos.filter(v => v.is_curated);
+    else if (activeVideoFilter === 'featured') videos = videos.filter(v => v.is_featured);
+
+    if (!videos.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#127909;</div><div class="empty-state-text">Geen video\'s</div></div>';
+      return;
+    }
+
+    list.innerHTML = '<div class="video-grid">' + videos.map(v => {
+      const thumb = v.thumbnail_url || `https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`;
+      const badges = [];
+      if (v.is_member) badges.push('<span class="video-badge member">Van lid</span>');
+      if (v.is_curated) badges.push('<span class="video-badge curated">Aanbevolen</span>');
+      if (v.is_featured) badges.push('<span class="video-badge featured">Uitgelicht</span>');
+      return `
+        <div class="video-card" onclick="App.playVideo('${v.id}')">
+          <div class="video-thumb" style="background-image:url(${thumb})"></div>
+          <div class="video-info">
+            <div class="video-title">${escapeHtml(v.title)} ${badges.join('')}</div>
+            <div class="video-meta">${v.channel_name} &bull; ${v.published_at}</div>
+          </div>
+        </div>`;
+    }).join('') + '</div>';
+  }
+
+  function playVideo(id) {
+    const v = DEMO_VIDEOS.find(x => x.id === id);
+    if (!v) return;
+    const isReal = v.video_id && !v.video_id.startsWith('demo');
+    document.getElementById('video-player-content').innerHTML = `
+      ${isReal ? `
+        <div class="video-player-embed">
+          <iframe src="https://www.youtube.com/embed/${v.video_id}?rel=0" allowfullscreen></iframe>
+        </div>` : `
+        <div class="video-player-embed" style="display:flex;align-items:center;justify-content:center;background:var(--surface)">
+          <div style="text-align:center;color:var(--muted)">
+            <div style="font-size:48px;margin-bottom:8px">&#127909;</div>
+            <div>Video niet beschikbaar in demo</div>
+          </div>
+        </div>`}
+      <h2 style="margin-bottom:8px">${escapeHtml(v.title)}</h2>
+      <div class="video-meta" style="margin-bottom:16px">${v.channel_name} &bull; ${v.published_at}</div>
+      ${v.tags?.length ? `<div class="tags" style="margin-bottom:16px">${v.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+      ${v.ai_summary ? `
+        <div class="video-ai-summary">
+          <div class="video-ai-summary-label">AI Samenvatting</div>
+          <p style="font-size:14px;line-height:1.6;color:var(--text-secondary)">${escapeHtml(v.ai_summary)}</p>
+        </div>` : ''}
+    `;
+    navigate('video-player');
+  }
+
+  function initVideoFilters() {
+    document.getElementById('video-tags')?.addEventListener('click', (e) => {
+      const tag = e.target.closest('.tag');
+      if (!tag) return;
+      activeVideoFilter = tag.dataset.cat;
+      document.querySelectorAll('#video-tags .tag').forEach(t => t.classList.toggle('active', t.dataset.cat === activeVideoFilter));
+      loadVideos();
+    });
+  }
+
+  // --- Feature: mAIxs Chatbot ---
+
+  const MAIXS_ORG_ID = 'e95a8efb-ace3-46cb-89cf-deac0dd74dcc';
+
+  function loadChatbot() {
+    const container = document.getElementById('chatbot-container');
+    // Try to embed mAIxs chat widget
+    // In production this would be the actual mAIxs embed URL
+    container.innerHTML = `
+      <div class="chatbot-fallback">
+        <div class="chatbot-fallback-icon">&#129302;</div>
+        <h3>DBE Assistent</h3>
+        <p class="text-muted" style="max-width:300px">De AI-assistent is geconfigureerd in mAIxs (org: ${MAIXS_ORG_ID}). Zodra het mAIxs dashboard live is, verschijnt hier de chatbot.</p>
+        <div style="margin-top:16px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-align:left;max-width:400px;width:100%">
+          <div style="font-size:12px;color:var(--accent);font-weight:590;margin-bottom:8px">CONFIGURATIE</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6">
+            <div>Agent: <span style="color:var(--text)">DBE Assistent</span></div>
+            <div>Taal: <span style="color:var(--text)">Nederlands</span></div>
+            <div>Model: <span style="color:var(--text)">Claude</span></div>
+            <div>Modus: <span style="color:var(--text)">Knowledge Base</span></div>
+            <div>Features: <span style="color:var(--text)">Chatbot, Content, Dashboard</span></div>
+          </div>
+        </div>
+      </div>`;
   }
 
   // --- Feature: Admin Dashboard ---
@@ -1974,6 +2096,8 @@ const App = (() => {
     initDealFilters();
     initNewDeal();
     initUnreadTracking();
+    initFeedFilters();
+    initVideoFilters();
 
     // Offline detection
     window.addEventListener('online', () => {
@@ -2014,6 +2138,7 @@ const App = (() => {
     requestPushPermission,
     attachChatImage,
     removeChatImage,
+    playVideo,
     init
   };
 

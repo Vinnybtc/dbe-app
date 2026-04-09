@@ -77,6 +77,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
         <span>Educatie</span>
       </div>
+      <div class="nav-item" data-screen="feed" onclick="navigate('feed')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        <span>Feed</span>
+      </div>
+      <div class="nav-item" data-screen="videos" onclick="navigate('videos')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <span>Video's</span>
+      </div>
+      <div class="nav-item" data-screen="chatbot" onclick="navigate('chatbot')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>AI Assistent</span>
+      </div>
       <div class="nav-item nav-admin" data-screen="admin" onclick="navigate('admin')" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2m-9-11h2m18 0h2m-3.64-6.36l-1.42 1.42M6.06 17.94l-1.42 1.42m0-13.86l1.42 1.42m11.88 11.88l1.42 1.42"/></svg>
         <span>Admin</span>
@@ -216,6 +228,10 @@
         <div class="form-group">
           <label class="form-label">Bio</label>
           <textarea class="input textarea" id="edit-bio" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YouTube kanaal URL</label>
+          <input type="text" class="input" id="edit-youtube" placeholder="https://youtube.com/@kanaal">
         </div>
         <div class="form-group">
           <label class="form-label">Nostr npub</label>
@@ -615,7 +631,49 @@
       <div class="page-header">
         <div class="page-title">Feed</div>
       </div>
+      <div class="tags" id="feed-tags">
+        <div class="tag active" data-cat="alle">Alle</div>
+        <div class="tag" data-cat="article">Artikelen</div>
+        <div class="tag" data-cat="video">Video's</div>
+        <div class="tag" data-cat="event_recap">Recaps</div>
+        <div class="tag" data-cat="analysis">Analyse</div>
+      </div>
       <div id="feed-list"></div>
+    </div>
+  </div>
+
+  <!-- YouTube / Video's -->
+  <div class="screen" id="screen-videos">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Video's</div>
+      </div>
+      <div class="tags" id="video-tags">
+        <div class="tag active" data-cat="alle">Alle</div>
+        <div class="tag" data-cat="member">Van leden</div>
+        <div class="tag" data-cat="curated">Aanbevolen</div>
+        <div class="tag" data-cat="featured">Uitgelicht</div>
+      </div>
+      <div id="video-list"></div>
+    </div>
+  </div>
+
+  <!-- Video Player -->
+  <div class="screen" id="screen-video-player">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div id="video-player-content"></div>
+    </div>
+  </div>
+
+  <!-- mAIxs Chatbot -->
+  <div class="screen" id="screen-chatbot">
+    <div class="screen-scroll" style="padding:0;display:flex;flex-direction:column;">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div class="page-title">DBE Assistent</div>
+        <p class="text-muted" style="font-size:12px;margin-top:4px">Powered by mAIxs</p>
+      </div>
+      <div id="chatbot-container" style="flex:1;overflow:hidden;"></div>
     </div>
   </div>
 
@@ -673,6 +731,14 @@
         <div class="meer-item" onclick="navigate('feed')">
           <div class="meer-icon">&#128240;</div>
           <div class="meer-label">Feed</div>
+        </div>
+        <div class="meer-item" onclick="navigate('videos')">
+          <div class="meer-icon">&#127909;</div>
+          <div class="meer-label">Video's</div>
+        </div>
+        <div class="meer-item" onclick="navigate('chatbot')">
+          <div class="meer-icon">&#129302;</div>
+          <div class="meer-label">AI Assistent</div>
         </div>
         <div class="meer-item" id="meer-admin" style="display:none" onclick="navigate('admin')">
           <div class="meer-icon">&#9881;</div>
