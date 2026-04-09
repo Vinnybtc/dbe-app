@@ -486,6 +486,192 @@ select.input { appearance: none; }
 .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state-text { font-size: 14px; }
 
+/* ---- Bitcoin Ticker ---- */
+.ticker-bar {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  max-width: 480px; width: 100%;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px; z-index: 60;
+  font-size: 13px;
+}
+.ticker-icon { color: var(--accent); font-size: 16px; font-weight: 700; }
+.ticker-price { font-family: 'Fragment Mono', monospace; font-weight: 700; }
+.ticker-change { font-size: 12px; font-weight: 600; }
+.ticker-change.up { color: var(--success); }
+.ticker-change.down { color: var(--danger); }
+.ticker-toggle {
+  margin-left: auto; cursor: pointer; color: var(--muted);
+  font-size: 10px; transition: transform 0.2s;
+}
+.ticker-toggle.open { transform: rotate(180deg); }
+.ticker-chart {
+  position: fixed; top: 32px; left: 50%; transform: translateX(-50%);
+  max-width: 480px; width: 100%;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 8px 16px 12px; z-index: 59;
+}
+.ticker-chart-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.ticker-chart-tabs .tag { padding: 3px 10px; font-size: 11px; }
+.ticker-bar ~ .screen .screen-scroll { padding-top: calc(52px + var(--safe-top)); }
+
+/* ---- Meer Menu ---- */
+.meer-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+}
+.meer-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 12px;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.meer-item:hover { border-color: var(--accent); }
+.meer-icon { font-size: 28px; margin-bottom: 8px; }
+.meer-label { font-size: 13px; font-weight: 500; }
+
+/* ---- Polls ---- */
+.poll-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+}
+.poll-question {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 15px; margin-bottom: 12px;
+}
+.poll-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; margin-bottom: 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.poll-option:hover { border-color: var(--accent); }
+.poll-option.voted { border-color: var(--accent); background: var(--accent-dim); }
+.poll-option-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--accent-dim); transition: width 0.5s;
+}
+.poll-option-label { position: relative; z-index: 1; flex: 1; font-size: 14px; }
+.poll-option-pct {
+  position: relative; z-index: 1;
+  font-family: 'Fragment Mono', monospace;
+  font-size: 12px; color: var(--accent); font-weight: 700;
+}
+.poll-meta { color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+/* ---- Leaderboard ---- */
+.lb-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+.lb-rank {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--accent);
+  min-width: 32px; text-align: center;
+}
+.lb-rank.gold { color: #FFD700; }
+.lb-rank.silver { color: #C0C0C0; }
+.lb-rank.bronze { color: #CD7F32; }
+.lb-info { flex: 1; }
+.lb-name { font-size: 14px; font-weight: 500; }
+.lb-company { font-size: 12px; color: var(--muted); }
+.lb-sats {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 14px; font-weight: 700; color: var(--accent);
+}
+.badge-card {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 6px 14px; margin: 4px;
+  font-size: 13px;
+}
+.badge-card.earned { border-color: var(--accent); background: var(--accent-dim); }
+.badge-icon { font-size: 18px; }
+
+/* ---- Kennisbank ---- */
+.kennis-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+  cursor: pointer; transition: border-color 0.2s;
+}
+.kennis-card:hover { border-color: var(--accent); }
+.kennis-cat {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 6px; font-size: 10px; font-weight: 600;
+  background: var(--accent-dim); color: var(--accent);
+  margin-bottom: 6px;
+}
+.kennis-title {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 15px; margin-bottom: 4px;
+}
+.kennis-excerpt { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.kennis-body { font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+
+/* ---- Vragenbox ---- */
+.question-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+}
+.question-text { font-size: 14px; margin-bottom: 8px; font-style: italic; }
+.question-answer {
+  padding-left: 12px; border-left: 3px solid var(--accent);
+  font-size: 14px; color: var(--text); margin-top: 8px;
+}
+.question-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* ---- Lightning Tip ---- */
+.tip-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--accent-dim); color: var(--accent);
+  border: 1px solid var(--accent); border-radius: 20px;
+  padding: 4px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.tip-btn:hover { background: var(--accent); color: #fff; }
+
+/* ---- Tip Modal ---- */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 400; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  max-width: 340px; width: 90%; text-align: center;
+}
+.modal-title {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 18px; margin-bottom: 16px;
+}
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 20px; cursor: pointer; float: right;
+}
+
+/* ---- Match Results ---- */
+.match-score {
+  display: inline-block; background: var(--accent);
+  color: #fff; border-radius: 10px; padding: 2px 8px;
+  font-size: 11px; font-weight: 700; margin-left: 8px;
+}
+
+/* ---- Event Photos ---- */
+.photo-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+  margin-top: 16px;
+}
+.photo-thumb {
+  aspect-ratio: 1; border-radius: var(--radius-sm);
+  background-size: cover; background-position: center;
+  cursor: pointer;
+}
+
 /* ---- Offline Banner ---- */
 .offline-banner {
   position: fixed; top: 0; left: 0; right: 0;

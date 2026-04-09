@@ -144,6 +144,10 @@
           <textarea class="input textarea" id="edit-bio" rows="3"></textarea>
         </div>
         <div class="form-group">
+          <label class="form-label">Nostr npub</label>
+          <input type="text" class="input" id="edit-nostr" placeholder="npub1...">
+        </div>
+        <div class="form-group">
           <label class="form-label">Avatar</label>
           <input type="file" class="input" id="edit-avatar" accept="image/*">
         </div>
@@ -277,6 +281,190 @@
     </form>
   </div>
 
+  <!-- Bitcoin Ticker (overlay bar) -->
+  <div class="ticker-bar" id="ticker-bar" style="display:none">
+    <span class="ticker-icon">&#8383;</span>
+    <span class="ticker-price" id="ticker-price">--</span>
+    <span class="ticker-change" id="ticker-change"></span>
+    <span class="ticker-toggle" id="ticker-toggle" onclick="App.toggleTickerChart()">&#9660;</span>
+  </div>
+  <div class="ticker-chart" id="ticker-chart" style="display:none">
+    <div class="ticker-chart-tabs">
+      <span class="tag active" data-range="1">24u</span>
+      <span class="tag" data-range="7">7d</span>
+      <span class="tag" data-range="30">30d</span>
+    </div>
+    <canvas id="ticker-canvas" width="440" height="120"></canvas>
+  </div>
+
+  <!-- Kennisbank -->
+  <div class="screen" id="screen-kennis">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Kennisbank</div>
+        <button class="btn-outline btn-sm" id="btn-new-article" style="display:none" onclick="navigate('kennis-new')">+ Artikel</button>
+      </div>
+      <div class="tags" id="kennis-tags">
+        <div class="tag active" data-cat="alle">Alle</div>
+        <div class="tag" data-cat="beginner">Beginner</div>
+        <div class="tag" data-cat="gevorderd">Gevorderd</div>
+        <div class="tag" data-cat="technisch">Technisch</div>
+      </div>
+      <div id="kennis-list"></div>
+    </div>
+  </div>
+
+  <!-- Nieuw Artikel -->
+  <div class="screen" id="screen-kennis-new">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div class="page-title" style="margin-bottom:20px">Nieuw artikel</div>
+      <form id="new-article-form" class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Titel *</label>
+          <input type="text" class="input" id="article-title" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categorie</label>
+          <select class="input" id="article-category">
+            <option value="wiki">Wiki</option>
+            <option value="article">Artikel</option>
+            <option value="education">Educatie</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Samenvatting</label>
+          <input type="text" class="input" id="article-excerpt">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Inhoud *</label>
+          <textarea class="input textarea" id="article-body" rows="10" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-full">Publiceren</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Artikel Detail -->
+  <div class="screen" id="screen-kennis-detail">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div id="kennis-detail-content"></div>
+    </div>
+  </div>
+
+  <!-- Polls -->
+  <div class="screen" id="screen-polls">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Polls</div>
+        <button class="btn-outline btn-sm" id="btn-new-poll" style="display:none" onclick="navigate('poll-new')">+ Poll</button>
+      </div>
+      <div id="polls-list"></div>
+    </div>
+  </div>
+
+  <!-- Nieuwe Poll -->
+  <div class="screen" id="screen-poll-new">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div class="page-title" style="margin-bottom:20px">Nieuwe poll</div>
+      <form id="new-poll-form" class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Vraag *</label>
+          <input type="text" class="input" id="poll-question" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Opties (min. 2)</label>
+          <div id="poll-options-inputs">
+            <input type="text" class="input" style="margin-bottom:8px" placeholder="Optie 1" required>
+            <input type="text" class="input" style="margin-bottom:8px" placeholder="Optie 2" required>
+          </div>
+          <button type="button" class="btn-outline btn-sm" onclick="App.addPollOption()">+ Optie</button>
+        </div>
+        <button type="submit" class="btn btn-full">Poll starten</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="screen" id="screen-leaderboard">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Leaderboard</div>
+      </div>
+      <div id="leaderboard-list"></div>
+      <div class="page-title" style="font-size:16px;margin-top:24px;margin-bottom:12px">Badges</div>
+      <div id="achievements-list"></div>
+    </div>
+  </div>
+
+  <!-- Zoek-Match -->
+  <div class="screen" id="screen-match">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Ik zoek...</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Beschrijf wat je zoekt en we matchen je met de juiste leden.</p>
+      <form id="match-form" class="form-stack">
+        <input type="text" class="input" id="match-query" placeholder="bijv. belastingadvies crypto, Lightning node hulp..." required>
+        <button type="submit" class="btn btn-full">Zoek match</button>
+      </form>
+      <div id="match-results" style="margin-top:20px"></div>
+    </div>
+  </div>
+
+  <!-- Vragenbox -->
+  <div class="screen" id="screen-vragen">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Vragenbox</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Stel anoniem een vraag aan het bestuur of een spreker.</p>
+      <form id="question-form" class="form-stack" style="margin-bottom:24px">
+        <textarea class="input textarea" id="question-text" rows="3" placeholder="Je vraag (anoniem)..." required></textarea>
+        <button type="submit" class="btn btn-full">Verstuur anoniem</button>
+      </form>
+      <div class="chat-section-label">Beantwoorde vragen</div>
+      <div id="questions-list"></div>
+    </div>
+  </div>
+
+  <!-- Meer Menu -->
+  <div class="screen" id="screen-meer">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Meer</div>
+      </div>
+      <div class="meer-grid">
+        <div class="meer-item" onclick="navigate('kennis')">
+          <div class="meer-icon">&#128218;</div>
+          <div class="meer-label">Kennisbank</div>
+        </div>
+        <div class="meer-item" onclick="navigate('polls')">
+          <div class="meer-icon">&#128499;</div>
+          <div class="meer-label">Polls</div>
+        </div>
+        <div class="meer-item" onclick="navigate('leaderboard')">
+          <div class="meer-icon">&#127942;</div>
+          <div class="meer-label">Leaderboard</div>
+        </div>
+        <div class="meer-item" onclick="navigate('match')">
+          <div class="meer-icon">&#128269;</div>
+          <div class="meer-label">Ik zoek...</div>
+        </div>
+        <div class="meer-item" onclick="navigate('vragen')">
+          <div class="meer-icon">&#10067;</div>
+          <div class="meer-label">Vragenbox</div>
+        </div>
+        <div class="meer-item" onclick="navigate('mijn-profiel')">
+          <div class="meer-icon">&#128100;</div>
+          <div class="meer-label">Mijn profiel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mijn Profiel -->
   <div class="screen" id="screen-mijn-profiel">
     <div class="screen-scroll">
@@ -309,11 +497,22 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span>Chat</span>
     </div>
-    <div class="nav-item" data-screen="mijn-profiel" onclick="navigate('mijn-profiel')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>Profiel</span>
+    <div class="nav-item" data-screen="meer" onclick="navigate('meer')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <span>Meer</span>
     </div>
   </nav>
+
+  <!-- Tip Modal -->
+  <div class="modal-overlay" id="tip-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="App.closeTipModal()">&times;</button>
+      <div class="modal-title">&#9889; Tip sturen</div>
+      <div id="tip-modal-qr" style="margin:16px auto;width:200px;height:200px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center"></div>
+      <p id="tip-modal-address" style="font-family:'Fragment Mono',monospace;font-size:12px;color:var(--muted);word-break:break-all;margin-bottom:12px"></p>
+      <button class="btn btn-full" id="tip-modal-copy">Kopieer Lightning address</button>
+    </div>
+  </div>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>

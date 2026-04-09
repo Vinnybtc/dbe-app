@@ -174,6 +174,11 @@ const App = (() => {
       case 'events': loadEvents(); break;
       case 'chat': loadChannels(); break;
       case 'mijn-profiel': renderMyProfile(); break;
+      case 'kennis': loadKennis(); break;
+      case 'polls': loadPolls(); break;
+      case 'leaderboard': loadLeaderboard(); break;
+      case 'vragen': loadQuestions(); break;
+      case 'profiel-edit': fillEditForm(); break;
     }
   }
 
@@ -222,6 +227,12 @@ const App = (() => {
     if (state.profile?.membership_tier === 'admin') {
       const btnEvent = document.getElementById('btn-new-event');
       if (btnEvent) btnEvent.style.display = '';
+      const btnPoll = document.getElementById('btn-new-poll');
+      if (btnPoll) btnPoll.style.display = '';
+    }
+    if (state.profile?.membership_tier === 'admin' || state.profile?.membership_tier === 'business_club') {
+      const btnArticle = document.getElementById('btn-new-article');
+      if (btnArticle) btnArticle.style.display = '';
     }
   }
 
@@ -379,7 +390,9 @@ const App = (() => {
             <span class="profile-info-label">&#9889;</span>
             <span class="profile-info-value">${m.lightning_address}</span>
             <button class="profile-info-copy" onclick="App.copyText('${m.lightning_address}')">Kopieer</button>
-          </div>` : ''}
+          </div>
+          ${!isOwn ? `<button class="tip-btn" style="margin-top:12px" onclick="event.stopPropagation(); App.showTipModal('${m.lightning_address}')">&#9889; Tip sturen</button>` : ''}
+          ` : ''}
         ${m.linkedin_url ? `
           <div class="profile-info-row">
             <span class="profile-info-label">in</span>
@@ -459,6 +472,7 @@ const App = (() => {
     document.getElementById('edit-lightning').value = p.lightning_address || '';
     document.getElementById('edit-tags').value = (p.expertise_tags || []).join(', ');
     document.getElementById('edit-bio').value = p.bio || '';
+    document.getElementById('edit-nostr').value = p.nostr_npub || '';
   }
 
   // --- Marktplaats ---
@@ -1004,6 +1018,492 @@ const App = (() => {
     fillEditForm();
   }
 
+  // --- Feature 1: Bitcoin Ticker ---
+
+  let tickerData = { prices: [], current: null, change24h: null };
+
+  async function initTicker() {
+    try {
+      const res = await fetch('https://mempool.space/api/v1/prices');
+      if (!res.ok) return;
+      const data = await res.json();
+      tickerData.current = data.EUR;
+      document.getElementById('ticker-price').textContent = '€' + Number(tickerData.current).toLocaleString('nl-NL');
+      document.getElementById('ticker-bar').style.display = 'flex';
+
+      // Fetch historical for chart
+      const histRes = await fetch('https://mempool.space/api/v1/mining/blocks/timestamp/' + (Date.now() / 1000 - 86400).toFixed(0));
+      // Simple: just show current price, chart later
+      updateTickerChange();
+    } catch (e) {
+      // Ticker is optional, fail silently
+    }
+
+    // Refresh every 60s
+    setInterval(async () => {
+      try {
+        const res = await fetch('https://mempool.space/api/v1/prices');
+        if (res.ok) {
+          const data = await res.json();
+          const prev = tickerData.current;
+          tickerData.current = data.EUR;
+          document.getElementById('ticker-price').textContent = '€' + Number(data.EUR).toLocaleString('nl-NL');
+          if (prev) {
+            const pct = ((data.EUR - prev) / prev * 100).toFixed(2);
+            const el = document.getElementById('ticker-change');
+            el.textContent = (pct >= 0 ? '+' : '') + pct + '%';
+            el.className = 'ticker-change ' + (pct >= 0 ? 'up' : 'down');
+          }
+        }
+      } catch (e) {}
+    }, 60000);
+  }
+
+  function updateTickerChange() {
+    // Placeholder — will be replaced with actual 24h change when historical data is available
+    const el = document.getElementById('ticker-change');
+    el.textContent = '';
+  }
+
+  function toggleTickerChart() {
+    const chart = document.getElementById('ticker-chart');
+    const toggle = document.getElementById('ticker-toggle');
+    if (chart.style.display === 'none') {
+      chart.style.display = 'block';
+      toggle.classList.add('open');
+    } else {
+      chart.style.display = 'none';
+      toggle.classList.remove('open');
+    }
+  }
+
+  // --- Feature 2: Lightning Tipping ---
+
+  function showTipModal(lightningAddress) {
+    if (!lightningAddress) {
+      showToast('Dit lid heeft geen Lightning address', 'error');
+      return;
+    }
+    const modal = document.getElementById('tip-modal');
+    const qrBox = document.getElementById('tip-modal-qr');
+    const addrEl = document.getElementById('tip-modal-address');
+
+    addrEl.textContent = lightningAddress;
+
+    // Generate LNURL-pay from Lightning address
+    const lnurl = 'lightning:' + lightningAddress;
+    qrBox.innerHTML = '';
+    if (typeof qrcode !== 'undefined') {
+      const qr = qrcode(0, 'M');
+      qr.addData(lnurl);
+      qr.make();
+      qrBox.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0 });
+    } else {
+      qrBox.innerHTML = `<div style="color:#000;font-size:10px;padding:8px;word-break:break-all">${lnurl}</div>`;
+    }
+
+    document.getElementById('tip-modal-copy').onclick = () => {
+      copyText(lightningAddress);
+    };
+
+    modal.classList.add('show');
+  }
+
+  function closeTipModal() {
+    document.getElementById('tip-modal').classList.remove('show');
+  }
+
+  // --- Feature 3: Polls ---
+
+  const DEMO_POLLS = [
+    {
+      id: 'poll1', author_id: 'demo-pieter', question: 'Welk onderwerp voor de volgende meetup?',
+      is_active: true, created_at: '2026-04-08T10:00:00Z',
+      options: [
+        { id: 'po1', label: 'Lightning Network deep-dive', votes: 12 },
+        { id: 'po2', label: 'Bitcoin & belasting in NL', votes: 18 },
+        { id: 'po3', label: 'Mining in Nederland', votes: 8 },
+        { id: 'po4', label: 'Multisig & security', votes: 15 }
+      ],
+      myVote: 'po2', totalVotes: 53
+    },
+    {
+      id: 'poll2', author_id: 'demo-bram', question: 'Telegram volledig vervangen door de DBE app?',
+      is_active: true, created_at: '2026-04-07T14:00:00Z',
+      options: [
+        { id: 'po5', label: 'Ja, volledig overstappen', votes: 22 },
+        { id: 'po6', label: 'Nee, naast elkaar gebruiken', votes: 14 },
+        { id: 'po7', label: 'Eerst testen met kleine groep', votes: 19 }
+      ],
+      myVote: 'po5', totalVotes: 55
+    }
+  ];
+
+  async function loadPolls() {
+    const list = document.getElementById('polls-list');
+    let polls;
+
+    if (DEV_MODE) {
+      polls = DEMO_POLLS;
+    } else {
+      // TODO: fetch from supabase with joins
+      polls = [];
+    }
+
+    if (state.profile?.membership_tier === 'admin') {
+      document.getElementById('btn-new-poll').style.display = '';
+    }
+
+    if (!polls.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128499;</div><div class="empty-state-text">Nog geen polls</div></div>';
+      return;
+    }
+
+    list.innerHTML = polls.map(p => {
+      const total = p.totalVotes || p.options.reduce((s, o) => s + (o.votes || 0), 0);
+      return `
+        <div class="poll-card">
+          <div class="poll-question">${escapeHtml(p.question)}</div>
+          ${p.options.map(o => {
+            const pct = total ? Math.round(o.votes / total * 100) : 0;
+            const isMyVote = p.myVote === o.id;
+            return `
+              <div class="poll-option ${isMyVote ? 'voted' : ''}" onclick="App.votePoll('${p.id}','${o.id}')">
+                <div class="poll-option-bar" style="width:${pct}%"></div>
+                <span class="poll-option-label">${escapeHtml(o.label)}</span>
+                <span class="poll-option-pct">${pct}%</span>
+              </div>`;
+          }).join('')}
+          <div class="poll-meta">${total} stemmen</div>
+        </div>`;
+    }).join('');
+  }
+
+  function votePoll(pollId, optionId) {
+    if (DEV_MODE) {
+      const poll = DEMO_POLLS.find(p => p.id === pollId);
+      if (!poll) return;
+      // Remove old vote
+      if (poll.myVote) {
+        const oldOpt = poll.options.find(o => o.id === poll.myVote);
+        if (oldOpt) oldOpt.votes--;
+      }
+      // Add new vote
+      const newOpt = poll.options.find(o => o.id === optionId);
+      if (newOpt) newOpt.votes++;
+      poll.myVote = optionId;
+      poll.totalVotes = poll.options.reduce((s, o) => s + o.votes, 0);
+      loadPolls();
+      showToast('Stem uitgebracht!', 'success');
+    }
+  }
+
+  function addPollOption() {
+    const container = document.getElementById('poll-options-inputs');
+    const count = container.children.length + 1;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'input';
+    input.style.marginBottom = '8px';
+    input.placeholder = 'Optie ' + count;
+    container.appendChild(input);
+  }
+
+  function initNewPoll() {
+    document.getElementById('new-poll-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = document.getElementById('poll-question').value.trim();
+      const optionInputs = document.querySelectorAll('#poll-options-inputs input');
+      const options = Array.from(optionInputs).map(i => i.value.trim()).filter(Boolean);
+
+      if (options.length < 2) { showToast('Minimaal 2 opties', 'error'); return; }
+
+      if (DEV_MODE) {
+        DEMO_POLLS.unshift({
+          id: 'poll-' + Date.now(), author_id: state.user.id, question,
+          is_active: true, created_at: new Date().toISOString(),
+          options: options.map((label, i) => ({ id: 'po-' + Date.now() + i, label, votes: 0 })),
+          myVote: null, totalVotes: 0
+        });
+      }
+
+      e.target.reset();
+      document.getElementById('poll-options-inputs').innerHTML =
+        '<input type="text" class="input" style="margin-bottom:8px" placeholder="Optie 1" required>' +
+        '<input type="text" class="input" style="margin-bottom:8px" placeholder="Optie 2" required>';
+      showToast('Poll gestart!', 'success');
+      goBack();
+    });
+  }
+
+  // --- Feature 4: Push Notifications (registration) ---
+
+  async function initPushNotifications() {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+    if (Notification.permission === 'granted') return;
+    // We'll ask permission when user navigates to profile settings
+  }
+
+  async function requestPushPermission() {
+    if (!('Notification' in window)) {
+      showToast('Push notificaties niet ondersteund', 'error');
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      showToast('Notificaties ingeschakeld!', 'success');
+    }
+  }
+
+  // --- Feature 5: Kennisbank ---
+
+  const DEMO_ARTICLES = [
+    { id: 'a1', title: 'Wat is Bitcoin?', category: 'wiki', excerpt: 'Een introductie tot Bitcoin voor beginners. Wat maakt het anders dan gewoon geld?', body: 'Bitcoin is een gedecentraliseerd digitaal betaalsysteem dat in 2009 werd gelanceerd door de pseudonieme ontwikkelaar Satoshi Nakamoto.\n\nBitcoin maakt het mogelijk om waarde over het internet te versturen zonder tussenpersonen zoals banken. Transacties worden geverifieerd door netwerkdeelnemers (miners) en vastgelegd in een openbaar grootboek: de blockchain.\n\nBelangrijke eigenschappen:\n- Maximaal 21 miljoen Bitcoin\n- Gedecentraliseerd: geen enkele partij heeft controle\n- Censuurbestendig: niemand kan je transactie tegenhouden\n- Open source: iedereen kan de code controleren\n- Pseudoniem: adressen zijn niet direct gekoppeld aan identiteit', author: { first_name: 'Ramon', last_name: 'Lagrand' }, published_at: '2026-03-15', _tag: 'beginner' },
+    { id: 'a2', title: 'Lightning Network uitgelegd', category: 'wiki', excerpt: 'Hoe werkt het Lightning Network en waarom is het belangrijk voor Bitcoin betalingen?', body: 'Het Lightning Network is een "layer 2" protocol bovenop Bitcoin dat snelle en goedkope betalingen mogelijk maakt.\n\nHoe werkt het?\n1. Twee partijen openen een betalingskanaal op de Bitcoin blockchain\n2. Ze kunnen onbeperkt transacties doen binnen dit kanaal\n3. Alleen de opening en sluiting worden op-chain vastgelegd\n\nVoordelen:\n- Vrijwel instant betalingen (milliseconden)\n- Extreem lage kosten (fracties van een cent)\n- Schaalbaarheid: miljoenen transacties per seconde\n- Privacy: tussenliggende transacties zijn niet publiek\n\nPopulaire Lightning wallets: Phoenix, Breez, Zeus, Alby', author: { first_name: 'Onno', last_name: 'Langbroek' }, published_at: '2026-03-20', _tag: 'gevorderd' },
+    { id: 'a3', title: 'Bitcoin bewaren: hot vs cold wallet', category: 'education', excerpt: 'De verschillen tussen hot wallets en cold storage, en wanneer je welke gebruikt.', body: 'Hot wallet = verbonden met internet. Handig voor dagelijks gebruik, minder veilig voor grote bedragen.\n\nCold storage = offline bewaring. Veiliger, maar minder handig.\n\nVoorbeelden hot wallets:\n- Phoenix (Lightning)\n- BlueWallet\n- Alby (browser extension)\n\nVoorbeelden cold storage:\n- Trezor (hardware wallet)\n- Coldcard (hardware wallet)\n- Seed phrase op staal (Seedplate)\n\nVuistregel:\n- Dagelijks gebruik: hot wallet met klein bedrag\n- Spaargeld: hardware wallet\n- Groot vermogen: multisig setup', author: { first_name: 'Morris', last_name: 'Verdonk' }, published_at: '2026-04-01', _tag: 'beginner' },
+    { id: 'a4', title: 'Multisig in de praktijk', category: 'article', excerpt: 'Een praktische gids voor het opzetten van een 2-of-3 multisig setup voor je Bitcoin.', body: 'Multisig (multi-signature) betekent dat meerdere sleutels nodig zijn om een transactie te tekenen.\n\nEen 2-of-3 setup: je hebt 3 sleutels, waarvan 2 nodig zijn om te spenderen.\n\nWaarom multisig?\n- Geen single point of failure\n- Bescherming tegen diefstal\n- Inheritance planning\n\nTools:\n- Sparrow Wallet (desktop)\n- Nunchuk (mobiel)\n- Specter (self-hosted)\n\nStappen:\n1. Koop 3 hardware wallets (bijv. 2x Trezor + 1x Coldcard)\n2. Genereer 3 seeds, bewaar ze op aparte locaties\n3. Stel multisig wallet in met Sparrow\n4. Test met klein bedrag\n5. Documenteer je setup (voor erfgenamen)', author: { first_name: 'Morris', last_name: 'Verdonk' }, published_at: '2026-04-05', _tag: 'technisch' },
+  ];
+
+  let activeKennisFilter = 'alle';
+
+  async function loadKennis() {
+    const list = document.getElementById('kennis-list');
+
+    if (state.profile?.membership_tier === 'admin' || state.profile?.membership_tier === 'business_club') {
+      document.getElementById('btn-new-article').style.display = '';
+    }
+
+    let articles;
+    if (DEV_MODE) {
+      articles = DEMO_ARTICLES;
+    } else {
+      const { data } = await supabase.from('content').select('*, profiles:author_id(first_name, last_name)')
+        .eq('is_published', true).order('published_at', { ascending: false });
+      articles = data || [];
+    }
+
+    const filtered = activeKennisFilter === 'alle' ? articles : articles.filter(a => a._tag === activeKennisFilter || a.category === activeKennisFilter);
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128218;</div><div class="empty-state-text">Nog geen artikelen</div></div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(a => `
+      <div class="kennis-card" onclick="App.showArticle('${a.id}')">
+        <span class="kennis-cat">${a.category}</span>
+        <div class="kennis-title">${escapeHtml(a.title)}</div>
+        <div class="kennis-excerpt">${escapeHtml(a.excerpt || '')}</div>
+      </div>
+    `).join('');
+  }
+
+  function showArticle(id) {
+    const a = (DEV_MODE ? DEMO_ARTICLES : []).find(x => x.id === id);
+    if (!a) return;
+    const author = a.author || a.profiles;
+    document.getElementById('kennis-detail-content').innerHTML = `
+      <span class="kennis-cat">${a.category}</span>
+      <h2 style="margin:12px 0">${escapeHtml(a.title)}</h2>
+      ${author ? `<div style="color:var(--muted);font-size:13px;margin-bottom:16px">Door ${author.first_name} ${author.last_name}</div>` : ''}
+      <div class="kennis-body">${escapeHtml(a.body || '')}</div>
+    `;
+    navigate('kennis-detail');
+  }
+
+  function initKennisFilters() {
+    document.getElementById('kennis-tags').addEventListener('click', (e) => {
+      const tag = e.target.closest('.tag');
+      if (!tag) return;
+      activeKennisFilter = tag.dataset.cat;
+      document.querySelectorAll('#kennis-tags .tag').forEach(t =>
+        t.classList.toggle('active', t.dataset.cat === activeKennisFilter)
+      );
+      loadKennis();
+    });
+  }
+
+  function initNewArticle() {
+    document.getElementById('new-article-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const article = {
+        title: document.getElementById('article-title').value.trim(),
+        category: document.getElementById('article-category').value,
+        excerpt: document.getElementById('article-excerpt').value.trim(),
+        body: document.getElementById('article-body').value.trim(),
+        slug: document.getElementById('article-title').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        author_id: state.user.id,
+        is_published: true,
+        published_at: new Date().toISOString()
+      };
+
+      if (DEV_MODE) {
+        article.id = 'a-' + Date.now();
+        article.author = { first_name: state.profile.first_name, last_name: state.profile.last_name };
+        DEMO_ARTICLES.unshift(article);
+      } else {
+        const { error } = await supabase.from('content').insert(article);
+        if (error) { showToast('Fout: ' + error.message, 'error'); return; }
+      }
+
+      e.target.reset();
+      showToast('Artikel gepubliceerd!', 'success');
+      goBack();
+    });
+  }
+
+  // --- Feature 6: Leden Zoek-Match ---
+
+  function initMatch() {
+    document.getElementById('match-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('match-query').value.toLowerCase().trim();
+      if (!query) return;
+
+      const keywords = query.split(/[\s,]+/).filter(Boolean);
+      const scored = state.members.map(m => {
+        let score = 0;
+        const searchable = [
+          m.first_name, m.last_name, m.company, m.job_title, m.bio,
+          ...(m.expertise_tags || [])
+        ].filter(Boolean).join(' ').toLowerCase();
+
+        keywords.forEach(kw => {
+          if (searchable.includes(kw)) score += 10;
+          // Partial match
+          (m.expertise_tags || []).forEach(tag => {
+            if (tag.toLowerCase().includes(kw)) score += 20;
+          });
+          if ((m.company || '').toLowerCase().includes(kw)) score += 5;
+          if ((m.bio || '').toLowerCase().includes(kw)) score += 3;
+        });
+
+        return { member: m, score };
+      }).filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
+
+      const results = document.getElementById('match-results');
+      if (!scored.length) {
+        results.innerHTML = '<div class="empty-state"><div class="empty-state-text">Geen matches gevonden. Probeer andere zoektermen.</div></div>';
+        return;
+      }
+
+      results.innerHTML = '<div class="chat-section-label">Beste matches</div>' +
+        scored.map(({ member: m, score }) => {
+          const initials = (m.first_name?.[0] || '') + (m.last_name?.[0] || '');
+          return `
+            <div class="channel-item" onclick="App.showProfile('${m.id}')" style="margin-bottom:8px">
+              <div class="channel-icon" style="border-radius:50%;background:${getColor(m.id)};font-size:14px">${initials}</div>
+              <div class="channel-info">
+                <div class="channel-name">${m.first_name} ${m.last_name} <span class="match-score">${score}pt</span></div>
+                <div class="channel-desc">${[m.job_title, m.company].filter(Boolean).join(' — ')}</div>
+              </div>
+            </div>`;
+        }).join('');
+    });
+  }
+
+  // --- Feature 7: Event Foto's (in event detail) ---
+
+  // Photo upload is handled in event detail view — add upload button there
+  // For demo: show placeholder message
+
+  // --- Feature 8: Sats Leaderboard & Achievements ---
+
+  const DEMO_ACHIEVEMENTS = [
+    { slug: 'early_adopter', name: 'Early Adopter', icon: '🏆', earned: true },
+    { slug: 'profile_complete', name: 'Profiel Compleet', icon: '✅', earned: true },
+    { slug: 'first_message', name: 'Eerste Bericht', icon: '💬', earned: true },
+    { slug: 'event_attendee', name: 'Event Bezoeker', icon: '🎫', earned: true },
+    { slug: 'marketplace_seller', name: 'Aanbieder', icon: '🏪', earned: false },
+    { slug: 'community_builder', name: 'Community Builder', icon: '🔥', earned: false },
+    { slug: 'lightning_pro', name: 'Lightning Pro', icon: '⚡', earned: true },
+    { slug: 'social_butterfly', name: 'Netwerker', icon: '🦋', earned: false },
+    { slug: 'poll_voter', name: 'Stemmer', icon: '🗳️', earned: true },
+    { slug: 'nostr_linked', name: 'Nostr Verified', icon: '🟣', earned: false },
+  ];
+
+  async function loadLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    const badgeList = document.getElementById('achievements-list');
+
+    // Sort members by sats
+    const ranked = [...state.members].sort((a, b) => (b.sats_balance || 0) - (a.sats_balance || 0)).slice(0, 15);
+
+    list.innerHTML = ranked.map((m, i) => {
+      const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      return `
+        <div class="lb-item" onclick="App.showProfile('${m.id}')">
+          <div class="lb-rank ${rankClass}">#${i + 1}</div>
+          <div class="avatar" style="width:36px;height:36px;font-size:14px;background:${getColor(m.id)};margin:0">${(m.first_name?.[0] || '') + (m.last_name?.[0] || '')}</div>
+          <div class="lb-info">
+            <div class="lb-name">${m.first_name} ${m.last_name}</div>
+            <div class="lb-company">${m.company || ''}</div>
+          </div>
+          <div class="lb-sats">&#9889; ${formatSats(m.sats_balance || 0)}</div>
+        </div>`;
+    }).join('');
+
+    // Badges
+    const badges = DEV_MODE ? DEMO_ACHIEVEMENTS : [];
+    badgeList.innerHTML = badges.map(b =>
+      `<span class="badge-card ${b.earned ? 'earned' : ''}"><span class="badge-icon">${b.icon}</span> ${b.name}</span>`
+    ).join('');
+  }
+
+  // --- Feature 9: Nostr Identity ---
+  // Handled in profile edit form (nostr_npub field added to HTML)
+  // Display in profile detail
+
+  // --- Feature 10: Anonieme Vragenbox ---
+
+  const DEMO_QUESTIONS = [
+    { id: 'q1', question: 'Hoe kan ik als beginner het beste starten met Bitcoin kopen in Nederland?', answer: 'Begin met een kleine aankoop via een Nederlandse exchange zoals Bitvavo of Relai. Stuur je Bitcoin daarna naar je eigen wallet (bijv. Phoenix of BlueWallet). Koop regelmatig een vast bedrag — dat heet DCA (Dollar Cost Averaging).', answered_by: 'Pieter Voogt', is_answered: true },
+    { id: 'q2', question: 'Wordt de DBE app verplicht of blijft Telegram bestaan?', answer: 'We willen eerst testen met een kleine groep. Als de app goed werkt, bespreken we met alle leden of we Telegram willen uitfaseren. Jullie stem telt — zie de poll!', answered_by: 'Bram Kanstein', is_answered: true },
+    { id: 'q3', question: 'Kan de DBE ook workshops organiseren over Bitcoin mining in Nederland?', answer: null, answered_by: null, is_answered: false },
+  ];
+
+  async function loadQuestions() {
+    const list = document.getElementById('questions-list');
+
+    let questions;
+    if (DEV_MODE) {
+      questions = DEMO_QUESTIONS.filter(q => q.is_answered);
+    } else {
+      const { data } = await supabase.from('questions').select('*').eq('is_answered', true).eq('is_public', true).order('created_at', { ascending: false });
+      questions = data || [];
+    }
+
+    if (!questions.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-text" style="font-size:13px">Nog geen beantwoorde vragen</div></div>';
+      return;
+    }
+
+    list.innerHTML = questions.map(q => `
+      <div class="question-card">
+        <div class="question-text">"${escapeHtml(q.question)}"</div>
+        ${q.answer ? `<div class="question-answer">${escapeHtml(q.answer)}</div>` : ''}
+        ${q.answered_by ? `<div class="question-meta">Beantwoord door ${typeof q.answered_by === 'string' ? q.answered_by : 'Bestuur'}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function initQuestionForm() {
+    document.getElementById('question-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('question-text').value.trim();
+      if (!text) return;
+
+      if (DEV_MODE) {
+        DEMO_QUESTIONS.push({ id: 'q-' + Date.now(), question: text, answer: null, answered_by: null, is_answered: false });
+      } else {
+        await supabase.from('questions').insert({ question: text });
+      }
+
+      document.getElementById('question-text').value = '';
+      showToast('Vraag anoniem verstuurd!', 'success');
+    });
+  }
+
   // --- Utility ---
 
   function showToast(msg, type = '') {
@@ -1086,6 +1586,13 @@ const App = (() => {
     initNewListing();
     initNewEvent();
     initChat();
+    initNewPoll();
+    initKennisFilters();
+    initNewArticle();
+    initMatch();
+    initQuestionForm();
+    initTicker();
+    initPushNotifications();
 
     // Offline detection
     window.addEventListener('online', () => {
@@ -1115,6 +1622,13 @@ const App = (() => {
     openDm,
     copyText,
     showToast,
+    showTipModal,
+    closeTipModal,
+    toggleTickerChart,
+    votePoll,
+    addPollOption,
+    showArticle,
+    requestPushPermission,
     init
   };
 
