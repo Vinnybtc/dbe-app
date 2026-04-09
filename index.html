@@ -73,7 +73,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         <span>Deals</span>
       </div>
-      <div class="nav-item" data-screen="pods" onclick="navigate('pods')">
+      <div class="nav-item" data-screen="ringen" onclick="navigate('ringen')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Pods</span>
       </div>
@@ -602,34 +602,34 @@
   </div>
 
   <!-- Accountability Pods -->
-  <div class="screen" id="screen-pods">
+  <div class="screen" id="screen-ringen">
     <div class="screen-scroll">
       <div class="page-header">
         <div class="page-title">Pods</div>
-        <button class="btn-outline btn-sm" onclick="navigate('pod-new')">+ Pod</button>
+        <button class="btn-outline btn-sm" onclick="navigate('ring-new')">+ Pod</button>
       </div>
       <p class="text-muted" style="margin-bottom:16px">Kleine groepjes van 4-6 leden die samen een doel nastreven.</p>
-      <div id="pods-list"></div>
+      <div id="ringen-list"></div>
     </div>
   </div>
 
   <!-- Nieuwe Pod -->
-  <div class="screen" id="screen-pod-new">
+  <div class="screen" id="screen-ring-new">
     <div class="screen-scroll">
       <button class="btn-back" onclick="goBack()">&larr; Terug</button>
       <div class="page-title" style="margin-bottom:20px">Nieuwe pod</div>
-      <form id="new-pod-form" class="form-stack">
+      <form id="new-ring-form" class="form-stack">
         <div class="form-group">
           <label class="form-label">Naam *</label>
-          <input type="text" class="input" id="pod-name" required>
+          <input type="text" class="input" id="ring-name" required>
         </div>
         <div class="form-group">
           <label class="form-label">Doel</label>
-          <input type="text" class="input" id="pod-goal" placeholder="bijv. Elke week DCA&apos;en">
+          <input type="text" class="input" id="ring-goal" placeholder="bijv. Elke week DCA&apos;en">
         </div>
         <div class="form-group">
           <label class="form-label">Beschrijving</label>
-          <textarea class="input textarea" id="pod-desc" rows="2"></textarea>
+          <textarea class="input textarea" id="ring-desc" rows="2"></textarea>
         </div>
         <button type="submit" class="btn btn-full">Pod starten</button>
       </form>
@@ -888,7 +888,7 @@
           <div class="meer-icon">&#129309;</div>
           <div class="meer-label">Deal Flow</div>
         </div>
-        <div class="meer-item" onclick="navigate('pods')">
+        <div class="meer-item" onclick="navigate('ringen')">
           <div class="meer-icon">&#128101;</div>
           <div class="meer-label">Pods</div>
         </div>
