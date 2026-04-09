@@ -849,6 +849,58 @@
     </div>
   </div>
 
+  <!-- Mempool Fees -->
+  <div class="screen" id="screen-fees">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Mempool Fees</div></div><div id="fees-content"></div></div>
+  </div>
+  <!-- Difficulty -->
+  <div class="screen" id="screen-difficulty">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Difficulty Adjustment</div></div><div id="difficulty-content"></div></div>
+  </div>
+  <!-- Lightning Stats -->
+  <div class="screen" id="screen-lightning">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Lightning Network</div></div><div id="lightning-content"></div></div>
+  </div>
+  <!-- Sat per Euro -->
+  <div class="screen" id="screen-satpereuro">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Sats per Euro</div></div><p class="text-muted" style="margin-bottom:16px">Hoeveel sats krijg je voor &euro;1 door de jaren heen?</p><div id="satpereuro-content"></div></div>
+  </div>
+  <!-- Stock to Flow -->
+  <div class="screen" id="screen-s2f">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Stock-to-Flow</div></div><div id="s2f-content"></div></div>
+  </div>
+  <!-- HODL Calculator -->
+  <div class="screen" id="screen-hodl">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">HODL Calculator</div></div><p class="text-muted" style="margin-bottom:16px">Als je X jaar geleden Y euro had ge&iuml;nvesteerd...</p><div id="hodl-content"></div></div>
+  </div>
+  <!-- Block Reward Eras -->
+  <div class="screen" id="screen-eras">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Block Reward Eras</div></div><div id="eras-content"></div></div>
+  </div>
+  <!-- Proof of Work -->
+  <div class="screen" id="screen-pow">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Proof of Work</div></div><div id="pow-content"></div></div>
+  </div>
+  <!-- Cold Storage Checklist -->
+  <div class="screen" id="screen-checklist">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Cold Storage Checklist</div></div><div id="checklist-content"></div></div>
+  </div>
+  <!-- Timechain Calendar -->
+  <div class="screen" id="screen-timechain">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Timechain</div></div><p class="text-muted" style="margin-bottom:16px">Belangrijke momenten in de Bitcoin geschiedenis.</p><div id="timechain-content"></div></div>
+  </div>
+  <!-- Fiat Debt Clock -->
+  <div class="screen" id="screen-debt">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Fiat Debt Clock</div></div><div id="debt-content"></div></div>
+  </div>
+  <!-- Run the Numbers -->
+  <div class="screen" id="screen-runnumbers">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Run the Numbers</div></div><p class="text-muted" style="margin-bottom:16px">Bitcoin in cijfers. Onweerlegbaar.</p><div id="runnumbers-content"></div></div>
+  </div>
+  <!-- Multisig Planner -->
+  <div class="screen" id="screen-multisig">
+    <div class="screen-scroll"><div class="page-header"><div class="page-title">Multisig Planner</div></div><p class="text-muted" style="margin-bottom:16px">Welke setup past bij jou?</p><div id="multisig-content"></div></div>
+  </div>
   <!-- Bitcoin Woordenboek -->
   <div class="screen" id="screen-dictionary">
     <div class="screen-scroll">
@@ -1038,6 +1090,58 @@
           <div class="meer-icon">&#10084;</div>
           <div class="meer-label">Doneer</div>
         </div>
+        <div class="meer-item" onclick="navigate('fees')">
+          <div class="meer-icon">&#9981;</div>
+          <div class="meer-label">Mempool Fees</div>
+        </div>
+        <div class="meer-item" onclick="navigate('difficulty')">
+          <div class="meer-icon">&#9881;</div>
+          <div class="meer-label">Difficulty</div>
+        </div>
+        <div class="meer-item" onclick="navigate('lightning')">
+          <div class="meer-icon">&#9889;</div>
+          <div class="meer-label">Lightning</div>
+        </div>
+        <div class="meer-item" onclick="navigate('hodl')">
+          <div class="meer-icon">&#128142;</div>
+          <div class="meer-label">HODL Calc</div>
+        </div>
+        <div class="meer-item" onclick="navigate('s2f')">
+          <div class="meer-icon">&#128200;</div>
+          <div class="meer-label">Stock-to-Flow</div>
+        </div>
+        <div class="meer-item" onclick="navigate('satpereuro')">
+          <div class="meer-icon">&#8383;</div>
+          <div class="meer-label">Sat/EUR</div>
+        </div>
+        <div class="meer-item" onclick="navigate('eras')">
+          <div class="meer-icon">&#9201;</div>
+          <div class="meer-label">Halvings</div>
+        </div>
+        <div class="meer-item" onclick="navigate('pow')">
+          <div class="meer-icon">&#9874;</div>
+          <div class="meer-label">Mining Sim</div>
+        </div>
+        <div class="meer-item" onclick="navigate('checklist')">
+          <div class="meer-icon">&#128274;</div>
+          <div class="meer-label">Cold Storage</div>
+        </div>
+        <div class="meer-item" onclick="navigate('timechain')">
+          <div class="meer-icon">&#9203;</div>
+          <div class="meer-label">Timechain</div>
+        </div>
+        <div class="meer-item" onclick="navigate('debt')">
+          <div class="meer-icon">&#128184;</div>
+          <div class="meer-label">Debt Clock</div>
+        </div>
+        <div class="meer-item" onclick="navigate('runnumbers')">
+          <div class="meer-icon">&#128290;</div>
+          <div class="meer-label">Run Numbers</div>
+        </div>
+        <div class="meer-item" onclick="navigate('multisig')">
+          <div class="meer-icon">&#128272;</div>
+          <div class="meer-label">Multisig</div>
+        </div>
         <div class="meer-item" id="meer-admin" style="display:none" onclick="navigate('admin')">
           <div class="meer-icon">&#9881;</div>
           <div class="meer-label">Admin</div>
@@ -1088,6 +1192,7 @@
 <script src="features.js"></script>
 <script src="quotes.js"></script>
 <script src="extras.js"></script>
+<script src="bitcoin.js"></script>
 <script src="wow.js"></script>
 <script>
 // Register Service Worker

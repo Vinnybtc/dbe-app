@@ -210,6 +210,19 @@ const App = (() => {
       case 'memes': if (typeof Extras !== 'undefined') Extras.renderMemes(); break;
       case 'saved': if (typeof Extras !== 'undefined') Extras.renderSavedItems(); break;
       case 'donate': if (typeof Extras !== 'undefined') Extras.renderDonate(); break;
+      case 'fees': if (typeof Bitcoin !== 'undefined') Bitcoin.renderFees(); break;
+      case 'difficulty': if (typeof Bitcoin !== 'undefined') Bitcoin.renderDifficulty(); break;
+      case 'lightning': if (typeof Bitcoin !== 'undefined') Bitcoin.renderLightningStats(); break;
+      case 'satpereuro': if (typeof Bitcoin !== 'undefined') Bitcoin.renderSatPerEuro(); break;
+      case 's2f': if (typeof Bitcoin !== 'undefined') Bitcoin.renderS2F(); break;
+      case 'hodl': if (typeof Bitcoin !== 'undefined') Bitcoin.renderHodl(); break;
+      case 'eras': if (typeof Bitcoin !== 'undefined') Bitcoin.renderBlockRewards(); break;
+      case 'pow': if (typeof Bitcoin !== 'undefined') Bitcoin.renderPoW(); break;
+      case 'checklist': if (typeof Bitcoin !== 'undefined') Bitcoin.renderChecklist(); break;
+      case 'timechain': if (typeof Bitcoin !== 'undefined') Bitcoin.renderTimechain(); break;
+      case 'debt': if (typeof Bitcoin !== 'undefined') Bitcoin.renderDebtClock(); break;
+      case 'runnumbers': if (typeof Bitcoin !== 'undefined') Bitcoin.renderRunNumbers(); break;
+      case 'multisig': if (typeof Bitcoin !== 'undefined') Bitcoin.renderMultisig(); break;
     }
   }
 
