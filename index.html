@@ -677,6 +677,167 @@
     </div>
   </div>
 
+  <!-- Prijsalerts -->
+  <div class="screen" id="screen-alerts">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Prijsalerts</div>
+      </div>
+      <form id="alert-form" class="form-stack" style="margin-bottom:20px">
+        <div style="display:flex;gap:8px">
+          <select class="input" id="alert-direction" style="width:120px">
+            <option value="above">Boven</option>
+            <option value="below">Onder</option>
+          </select>
+          <input type="number" class="input" id="alert-price" placeholder="Prijs in EUR" style="flex:1">
+          <button type="submit" class="btn btn-sm">+</button>
+        </div>
+      </form>
+      <div id="alerts-list"></div>
+    </div>
+  </div>
+
+  <!-- Vergaderplanner -->
+  <div class="screen" id="screen-meetings">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Meetings</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Plan een 1-op-1 meeting met een ander lid.</p>
+      <div id="meetings-list"></div>
+    </div>
+  </div>
+
+  <!-- Bounty Board -->
+  <div class="screen" id="screen-bounties">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Bounty Board</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Verdien sats door taken voor de community uit te voeren.</p>
+      <div id="bounties-list"></div>
+    </div>
+  </div>
+
+  <!-- Portefeuille Tracker -->
+  <div class="screen" id="screen-portfolio">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Mijn Bitcoin</div>
+      </div>
+      <div id="portfolio-content"></div>
+    </div>
+  </div>
+
+  <!-- Referral -->
+  <div class="screen" id="screen-referral">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Nodig iemand uit</div>
+      </div>
+      <div id="referral-content"></div>
+    </div>
+  </div>
+
+  <!-- Challenges -->
+  <div class="screen" id="screen-challenges">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Challenges</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Maandelijkse community challenges. Rond ze af en verdien sats!</p>
+      <div id="challenges-list"></div>
+    </div>
+  </div>
+
+  <!-- Bitcoin Kaart -->
+  <div class="screen" id="screen-kaart">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Bitcoin Kaart</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Bitcoin-vriendelijke locaties in Den Haag. &#9889; = accepteert Lightning.</p>
+      <div id="map-list"></div>
+    </div>
+  </div>
+
+  <!-- Event Feedback -->
+  <div class="screen" id="screen-feedback">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Event Feedback</div>
+      </div>
+      <form id="feedback-form" class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Hoe vond je het? (1-5)</label>
+          <select class="input" id="feedback-rating">
+            <option value="5">5 — Uitstekend</option>
+            <option value="4">4 — Goed</option>
+            <option value="3">3 — OK</option>
+            <option value="2">2 — Matig</option>
+            <option value="1">1 — Slecht</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wat vond je goed?</label>
+          <textarea class="input textarea" id="feedback-comment" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wat kan beter?</label>
+          <textarea class="input textarea" id="feedback-suggestion" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-full">Verstuur (anoniem)</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Whale Alert -->
+  <div class="screen" id="screen-whales">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Whale Alert</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Grote Bitcoin transacties (>100 BTC) van de afgelopen 24 uur.</p>
+      <div id="whale-list"></div>
+    </div>
+  </div>
+
+  <!-- Bitcoin24 Calculator -->
+  <div class="screen" id="screen-btc24">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Bitcoin24</div>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">21-jaar Bitcoin strategie simulator. Gebaseerd op het <a href="https://github.com/LaDoger/Bitcoin24" target="_blank" style="color:var(--accent)">Bitcoin24 model</a> van Michael Saylor.</p>
+      <form id="btc24-form" class="form-stack" style="margin-bottom:24px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group">
+            <label class="form-label">Startkapitaal (&euro;)</label>
+            <input type="number" class="input" id="btc24-capital" value="10000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Maandelijkse DCA (&euro;)</label>
+            <input type="number" class="input" id="btc24-dca" value="200">
+          </div>
+          <div class="form-group">
+            <label class="form-label">BTC CAGR (%)</label>
+            <input type="number" class="input" id="btc24-cagr" value="40">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trad. CAGR (%)</label>
+            <input type="number" class="input" id="btc24-trad" value="7">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jaren: <span id="btc24-years-label">21</span></label>
+          <input type="range" id="btc24-years" min="1" max="30" value="21" style="width:100%" oninput="document.getElementById('btc24-years-label').textContent=this.value">
+        </div>
+      </form>
+      <div id="btc24-content"></div>
+      <p class="text-muted" style="font-size:11px;margin-top:16px">Disclaimer: Dit is een vereenvoudigd model en geen financieel advies. Resultaten zijn hypothetisch.</p>
+    </div>
+  </div>
+
   <!-- Admin Dashboard -->
   <div class="screen" id="screen-admin">
     <div class="screen-scroll">
@@ -740,6 +901,46 @@
           <div class="meer-icon">&#129302;</div>
           <div class="meer-label">AI Assistent</div>
         </div>
+        <div class="meer-item" onclick="navigate('btc24')">
+          <div class="meer-icon">&#128200;</div>
+          <div class="meer-label">Bitcoin24</div>
+        </div>
+        <div class="meer-item" onclick="navigate('alerts')">
+          <div class="meer-icon">&#128276;</div>
+          <div class="meer-label">Prijsalerts</div>
+        </div>
+        <div class="meer-item" onclick="navigate('bounties')">
+          <div class="meer-icon">&#127919;</div>
+          <div class="meer-label">Bounties</div>
+        </div>
+        <div class="meer-item" onclick="navigate('challenges')">
+          <div class="meer-icon">&#127941;</div>
+          <div class="meer-label">Challenges</div>
+        </div>
+        <div class="meer-item" onclick="navigate('portfolio')">
+          <div class="meer-icon">&#128176;</div>
+          <div class="meer-label">Mijn Bitcoin</div>
+        </div>
+        <div class="meer-item" onclick="navigate('kaart')">
+          <div class="meer-icon">&#128506;</div>
+          <div class="meer-label">BTC Kaart</div>
+        </div>
+        <div class="meer-item" onclick="navigate('whales')">
+          <div class="meer-icon">&#128011;</div>
+          <div class="meer-label">Whale Alert</div>
+        </div>
+        <div class="meer-item" onclick="navigate('meetings')">
+          <div class="meer-icon">&#128197;</div>
+          <div class="meer-label">Meetings</div>
+        </div>
+        <div class="meer-item" onclick="navigate('referral')">
+          <div class="meer-icon">&#128279;</div>
+          <div class="meer-label">Invite</div>
+        </div>
+        <div class="meer-item" onclick="navigate('feedback')">
+          <div class="meer-icon">&#11088;</div>
+          <div class="meer-label">Feedback</div>
+        </div>
         <div class="meer-item" id="meer-admin" style="display:none" onclick="navigate('admin')">
           <div class="meer-icon">&#9881;</div>
           <div class="meer-label">Admin</div>
@@ -787,6 +988,7 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script src="auth.js"></script>
 <script src="app.js"></script>
+<script src="features.js"></script>
 <script>
 // Register Service Worker
 if ('serviceWorker' in navigator) {

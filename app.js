@@ -192,6 +192,15 @@ const App = (() => {
       case 'videos': loadVideos(); break;
       case 'chatbot': loadChatbot(); break;
       case 'admin': loadAdmin(); break;
+      case 'alerts': Features.renderAlerts(); break;
+      case 'meetings': Features.renderMeetings(); break;
+      case 'bounties': Features.renderBounties(); break;
+      case 'portfolio': Features.renderPortfolio(); break;
+      case 'referral': Features.renderReferral(); break;
+      case 'challenges': Features.renderChallenges(); break;
+      case 'kaart': Features.renderMap(); break;
+      case 'whales': Features.renderWhaleAlert(); break;
+      case 'btc24': Features.renderBitcoin24(); break;
     }
   }
 
