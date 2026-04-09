@@ -69,7 +69,7 @@ html, body {
   height: 100%;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* mobile: nav bottom */
   overflow: hidden;
 }
 
@@ -79,6 +79,7 @@ html, body {
   position: relative;
   overflow: hidden;
   min-height: 0;
+  order: -1; /* content above nav on mobile */
 }
 
 /* ---- Screens ---- */
@@ -172,7 +173,6 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   padding: 4px 0 calc(4px + var(--safe-bottom));
   height: var(--nav-height);
   flex-shrink: 0;
-  order: 2; /* below content on mobile */
 }
 .nav-brand { display: none; }
 .nav-main { display: contents; }
@@ -200,16 +200,17 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   background: var(--danger);
 }
 
-.content { order: 1; }
-
 /* Desktop: sidebar */
 @media (min-width: 768px) {
   .app {
     flex-direction: row;
   }
 
+  .content {
+    order: 0; /* reset */
+  }
+
   .nav {
-    order: -1; /* sidebar left of content */
     flex-direction: column; align-items: stretch;
     width: 220px; min-width: 220px;
     height: auto;
