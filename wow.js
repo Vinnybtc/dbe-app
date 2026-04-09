@@ -235,6 +235,8 @@ const Wow = (() => {
         <p class="text-muted">Dutch Bitcoin Embassy &bull; ${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
       </div>
 
+      ${typeof Extras !== 'undefined' ? Extras.renderQuickActions() : ''}
+
       <div class="dashboard-grid">
         <div class="dashboard-card dashboard-card-wide">
           ${renderHalvingCountdown()}
@@ -263,6 +265,10 @@ const Wow = (() => {
 
         <div class="dashboard-card dashboard-card-wide">
           ${renderLatestBlocks()}
+        </div>
+
+        <div class="dashboard-card">
+          ${typeof Extras !== 'undefined' ? Extras.renderWeeklyDigest() : ''}
         </div>
 
         <div class="dashboard-card dashboard-card-full">

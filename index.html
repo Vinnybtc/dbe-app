@@ -849,6 +849,64 @@
     </div>
   </div>
 
+  <!-- Bitcoin Woordenboek -->
+  <div class="screen" id="screen-dictionary">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Bitcoin Woordenboek</div></div>
+      <input class="input search-bar" id="dict-search" placeholder="Zoek een term...">
+      <div id="dictionary-list"></div>
+    </div>
+  </div>
+
+  <!-- Sats Converter -->
+  <div class="screen" id="screen-converter">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Sats &#8596; EUR</div></div>
+      <div id="converter-content"></div>
+    </div>
+  </div>
+
+  <!-- Reading List -->
+  <div class="screen" id="screen-reading">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Reading List</div></div>
+      <p class="text-muted" style="margin-bottom:16px">Aanbevolen door DBE leden.</p>
+      <div id="reading-list"></div>
+    </div>
+  </div>
+
+  <!-- Sound Money Stats -->
+  <div class="screen" id="screen-soundmoney">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Sound Money</div></div>
+      <p class="text-muted" style="margin-bottom:16px">Bitcoin vs. de rest. Waarom sound money ertoe doet.</p>
+      <div id="soundmoney-content"></div>
+    </div>
+  </div>
+
+  <!-- Meme Board -->
+  <div class="screen" id="screen-memes">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Meme Board</div></div>
+      <div id="meme-list"></div>
+    </div>
+  </div>
+
+  <!-- Saved Items -->
+  <div class="screen" id="screen-saved">
+    <div class="screen-scroll">
+      <div class="page-header"><div class="page-title">Opgeslagen</div></div>
+      <div id="saved-list"></div>
+    </div>
+  </div>
+
+  <!-- Donate -->
+  <div class="screen" id="screen-donate">
+    <div class="screen-scroll">
+      <div id="donate-content"></div>
+    </div>
+  </div>
+
   <!-- Admin Dashboard -->
   <div class="screen" id="screen-admin">
     <div class="screen-scroll">
@@ -952,6 +1010,34 @@
           <div class="meer-icon">&#11088;</div>
           <div class="meer-label">Feedback</div>
         </div>
+        <div class="meer-item" onclick="navigate('dictionary')">
+          <div class="meer-icon">&#128214;</div>
+          <div class="meer-label">Woordenboek</div>
+        </div>
+        <div class="meer-item" onclick="navigate('converter')">
+          <div class="meer-icon">&#9889;</div>
+          <div class="meer-label">Converter</div>
+        </div>
+        <div class="meer-item" onclick="navigate('reading')">
+          <div class="meer-icon">&#128218;</div>
+          <div class="meer-label">Reading List</div>
+        </div>
+        <div class="meer-item" onclick="navigate('soundmoney')">
+          <div class="meer-icon">&#128176;</div>
+          <div class="meer-label">Sound Money</div>
+        </div>
+        <div class="meer-item" onclick="navigate('memes')">
+          <div class="meer-icon">&#128514;</div>
+          <div class="meer-label">Memes</div>
+        </div>
+        <div class="meer-item" onclick="navigate('saved')">
+          <div class="meer-icon">&#128278;</div>
+          <div class="meer-label">Opgeslagen</div>
+        </div>
+        <div class="meer-item" onclick="navigate('donate')">
+          <div class="meer-icon">&#10084;</div>
+          <div class="meer-label">Doneer</div>
+        </div>
         <div class="meer-item" id="meer-admin" style="display:none" onclick="navigate('admin')">
           <div class="meer-icon">&#9881;</div>
           <div class="meer-label">Admin</div>
@@ -1001,6 +1087,7 @@
 <script src="app.js"></script>
 <script src="features.js"></script>
 <script src="quotes.js"></script>
+<script src="extras.js"></script>
 <script src="wow.js"></script>
 <script>
 // Register Service Worker
