@@ -53,7 +53,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  font-family: 'Geist Sans', 'Geist', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Satoshi', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
   font-size: 15px;
@@ -189,9 +189,9 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
 
 /* ---- Common Elements ---- */
 .input {
-  width: 100%; padding: 10px 14px;
+  width: 100%; padding: 10px 16px;
   background: rgba(255,255,255,0.03); border: 1px solid var(--border-visible);
-  border-radius: var(--radius-sm); color: var(--text);
+  border-radius: var(--radius); color: var(--text);
   font-size: 14px; font-family: inherit; outline: none;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -202,9 +202,9 @@ select.input { appearance: none; }
 
 .btn {
   background: var(--accent); color: #fff;
-  border: none; padding: 10px 24px;
-  border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 590;
+  border: none; padding: 11px 24px;
+  border-radius: 56px;
+  font-size: 14px; font-weight: 700;
   cursor: pointer; font-family: inherit;
   transition: background 0.15s, transform 0.1s;
   letter-spacing: -0.01em;
@@ -213,19 +213,19 @@ select.input { appearance: none; }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-full { width: 100%; }
-.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-sm { padding: 7px 16px; font-size: 12px; }
 
 .btn-outline {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--border-visible);
-  color: var(--text-secondary); padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 510;
+  color: var(--text-secondary); padding: 11px 20px;
+  border-radius: 56px;
+  font-size: 14px; font-weight: 500;
   cursor: pointer; font-family: inherit;
   transition: border-color 0.15s, background 0.15s;
 }
-.btn-outline:hover { border-color: var(--border-strong); background: rgba(255,255,255,0.05); }
-.btn-outline.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-outline:hover { border-color: var(--border-strong); background: rgba(255,255,255,0.06); }
+.btn-outline.btn-sm { padding: 6px 14px; font-size: 12px; }
 .btn-outline.btn-danger { border-color: var(--danger); color: var(--danger); }
 .btn-outline.btn-danger:hover { background: var(--danger-dim); }
 
