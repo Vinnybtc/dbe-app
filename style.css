@@ -53,8 +53,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
-  font-feature-settings: "cv01", "ss03";
+  font-family: 'Geist Sans', 'Geist', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
   font-size: 15px;

@@ -1545,20 +1545,8 @@ const App = (() => {
     document.getElementById('member-search').addEventListener('input', filterMembers);
 
     if (DEV_MODE) {
-      // Dev mode: voeg "Demo login" knop toe
-      const loginContent = document.querySelector('.login-content');
-      const devBtn = document.createElement('button');
-      devBtn.className = 'btn btn-full';
-      devBtn.style.marginTop = '16px';
-      devBtn.style.background = '#3FB950';
-      devBtn.textContent = 'Demo mode starten';
-      devBtn.onclick = devLogin;
-      loginContent.appendChild(devBtn);
-
-      const devNote = document.createElement('div');
-      devNote.style.cssText = 'color:var(--muted);font-size:11px;margin-top:12px;';
-      devNote.textContent = 'Dev mode — geen Supabase verbinding nodig';
-      loginContent.appendChild(devNote);
+      // Dev mode: skip login, ga direct naar de app
+      devLogin();
     } else {
       // Auth state listener
       supabase.auth.onAuthStateChange(handleAuthChange);
