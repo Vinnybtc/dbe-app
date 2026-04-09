@@ -68,17 +68,23 @@ html, body {
 .app {
   height: 100%;
   width: 100%;
-  position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* Content area: holds all screens */
+.content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* ---- Screens ---- */
 .screen {
   position: absolute;
   inset: 0;
-  bottom: var(--nav-height);
   display: none;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -101,15 +107,6 @@ html, body {
 .screen-scroll::-webkit-scrollbar { width: 6px; }
 .screen-scroll::-webkit-scrollbar-track { background: transparent; }
 .screen-scroll::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 3px; }
-
-/* Content wrapper for max-width on wide screens */
-.screen-scroll > * { max-width: 960px; }
-.screen-scroll > .members-grid,
-.screen-scroll > .meer-grid { max-width: 100%; }
-
-#screen-login { bottom: 0; left: 0; }
-#screen-onboarding { bottom: 0; left: 0; }
-#screen-channel { bottom: 0; left: 0; }
 
 /* ---- Typography (Inter + Fragment Mono headings) ---- */
 h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
@@ -169,18 +166,18 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
 
 /* Mobile: bottom bar */
 .nav {
-  position: absolute; bottom: 0; left: 0; right: 0;
   background: var(--surface);
   border-top: 1px solid var(--border);
   display: flex; flex-direction: row; align-items: stretch;
   padding: 4px 0 calc(4px + var(--safe-bottom));
-  z-index: 50;
   height: var(--nav-height);
+  flex-shrink: 0;
+  order: 2; /* below content on mobile */
 }
 .nav-brand { display: none; }
 .nav-main { display: contents; }
 .nav-extra { display: none; }
-.nav-bottom { display: contents; }
+.nav-bottom { display: none; }
 .nav-divider { display: none; }
 
 .nav-item {
@@ -192,6 +189,7 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   position: relative;
   border-radius: 0;
   padding: 4px 0;
+  text-decoration: none;
 }
 .nav-item.active { color: var(--accent); }
 .nav-item:hover { color: var(--text-secondary); }
@@ -202,6 +200,8 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   background: var(--danger);
 }
 
+.content { order: 1; }
+
 /* Desktop: sidebar */
 @media (min-width: 768px) {
   .app {
@@ -209,10 +209,10 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   }
 
   .nav {
-    position: relative; bottom: auto; left: auto; right: auto;
+    order: -1; /* sidebar left of content */
     flex-direction: column; align-items: stretch;
     width: 220px; min-width: 220px;
-    height: 100%;
+    height: auto;
     border-top: none; border-right: 1px solid var(--border);
     padding: 0;
     gap: 2px;
@@ -263,20 +263,9 @@ h1, h2, h3, h4, .page-title, .login-title, .chat-header-title {
   .nav-item.active { background: var(--accent-dim); color: var(--accent); }
   .nav-item svg { width: 18px; height: 18px; }
 
-  .nav-badge {
-    position: static;
-    margin-left: auto;
-  }
+  .nav-badge { position: static; margin-left: auto; }
 
-  /* Screens: positioned next to sidebar */
-  .screen {
-    bottom: 0;
-    left: 0; /* sidebar pushes via flex */
-  }
-
-  .screen-scroll {
-    padding: 32px 40px;
-  }
+  .screen-scroll { padding: 32px 40px; }
 }
 
 /* ---- Common Elements ---- */
