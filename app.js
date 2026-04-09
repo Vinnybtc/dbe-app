@@ -6,8 +6,8 @@ const App = (() => {
 
   // --- Config ---
   // TODO: Vervang met echte Supabase credentials
-  const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-  const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+  const SUPABASE_URL = 'https://jvnbdbcwypgumfuclfha.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2bmJkYmN3eXBndW1mdWNsZmhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjA3NjYsImV4cCI6MjA5MTMzNjc2Nn0.ZH49f4A-xnzQTkipJRqyaRr_vbX4tvMFhp-n69PDqO4';
 
   // Dev mode: als credentials niet ingevuld, gebruik demo data
   const DEV_MODE = SUPABASE_URL.includes('YOUR_PROJECT');
