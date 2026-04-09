@@ -185,6 +185,11 @@ const App = (() => {
       case 'leaderboard': loadLeaderboard(); break;
       case 'vragen': loadQuestions(); break;
       case 'profiel-edit': fillEditForm(); break;
+      case 'deals': loadDeals(); break;
+      case 'pods': loadPods(); break;
+      case 'educatie': loadEducatie(); break;
+      case 'feed': loadFeed(); break;
+      case 'admin': loadAdmin(); break;
     }
   }
 
@@ -231,15 +236,16 @@ const App = (() => {
     document.getElementById('main-nav').style.display = 'flex';
     navigate('leden');
     if (state.profile?.membership_tier === 'admin') {
-      const btnEvent = document.getElementById('btn-new-event');
-      if (btnEvent) btnEvent.style.display = '';
-      const btnPoll = document.getElementById('btn-new-poll');
-      if (btnPoll) btnPoll.style.display = '';
+      document.querySelectorAll('#btn-new-event, #btn-new-poll, .nav-admin, #meer-admin').forEach(el => {
+        if (el) el.style.display = '';
+      });
     }
     if (state.profile?.membership_tier === 'admin' || state.profile?.membership_tier === 'business_club') {
       const btnArticle = document.getElementById('btn-new-article');
       if (btnArticle) btnArticle.style.display = '';
     }
+    // Award sats for onboarding
+    tryAwardSats('login', 100, 'Eerste login');
   }
 
   // Dev mode: skip login
@@ -313,6 +319,16 @@ const App = (() => {
     const allTags = new Set();
     state.members.forEach(m => (m.expertise_tags || []).forEach(t => allTags.add(t)));
     renderMemberTags(['Alle', ...Array.from(allTags).sort()]);
+
+    // Spotlight banner
+    const grid = document.getElementById('members-grid');
+    const spotlightHtml = renderSpotlight();
+    if (spotlightHtml) {
+      const container = grid.parentElement;
+      let existing = container.querySelector('.spotlight-banner');
+      if (existing) existing.remove();
+      grid.insertAdjacentHTML('beforebegin', spotlightHtml);
+    }
 
     renderMembers(state.members);
   }
@@ -409,7 +425,11 @@ const App = (() => {
             <span class="profile-info-label">&#127760;</span>
             <a href="${m.website_url}" target="_blank" class="profile-info-value" style="color:var(--accent)">${m.website_url}</a>
           </div>` : ''}
-        ${isOwn ? '<button class="btn btn-full" style="margin-top:20px" onclick="App.navigate(\'profiel-edit\')">Profiel bewerken</button>' : ''}
+        ${isOwn ? '<button class="btn btn-full" style="margin-top:20px" onclick="App.navigate(\'profiel-edit\')">Profiel bewerken</button>' : `
+          <div style="display:flex;gap:8px;margin-top:20px">
+            <button class="btn" style="flex:1" onclick="App.openDm('${m.id}', '${escapeHtml(m.first_name + ' ' + m.last_name)}')">Stuur bericht</button>
+            ${m.lightning_address ? `<button class="tip-btn" onclick="App.showTipModal('${m.lightning_address}')">&#9889; Tip</button>` : ''}
+          </div>`}
       </div>`;
 
     navigate('profiel');
@@ -1456,9 +1476,372 @@ const App = (() => {
     ).join('');
   }
 
+  // --- Feature: Accountability Pods ---
+
+  const DEMO_PODS = [
+    { id: 'pod1', name: 'DCA Discipline', goal: 'Elke week Bitcoin kopen', description: 'We houden elkaar scherp op consistent stacking.', members: ['demo-user-1', 'demo-l09', 'demo-l14', 'demo-l35'], max_members: 6, memberProfiles: [
+      { first_name: 'Vincent', last_name: 'de Wit' }, { first_name: 'Jamie', last_name: 'van Vliet' },
+      { first_name: 'Lars', last_name: 'Heerink' }, { first_name: 'Mauro', last_name: 'Halve' }
+    ]},
+    { id: 'pod2', name: 'Node Runners', goal: 'Eigen Bitcoin node draaien', description: 'Van installatie tot onderhoud — samen leren.', members: ['demo-l20', 'demo-l06', 'demo-l37'], max_members: 5, memberProfiles: [
+      { first_name: 'Onno', last_name: 'Langbroek' }, { first_name: 'Thomas', last_name: 'Rep' },
+      { first_name: 'Morris', last_name: 'Verdonk' }
+    ]},
+    { id: 'pod3', name: 'Bitcoin Bookclub', goal: 'Elke maand een Bitcoin boek lezen', description: 'The Bitcoin Standard, Broken Money, etc.', members: ['demo-marc', 'demo-l36', 'demo-l53', 'demo-l44', 'demo-l10'], max_members: 6, memberProfiles: [
+      { first_name: 'Marc', last_name: 'van Versendaal' }, { first_name: 'Max', last_name: 'van den Tempel' },
+      { first_name: 'Wenze', last_name: 'van Klink' }, { first_name: 'Ramon', last_name: 'Lagrand' },
+      { first_name: 'Jeroen', last_name: 'Blokland' }
+    ]},
+  ];
+
+  async function loadPods() {
+    const list = document.getElementById('pods-list');
+    const pods = DEV_MODE ? DEMO_PODS : [];
+
+    if (!pods.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128101;</div><div class="empty-state-text">Nog geen pods</div></div>';
+      return;
+    }
+
+    list.innerHTML = pods.map(p => {
+      const isMember = p.members.includes(state.user?.id);
+      const isFull = p.members.length >= p.max_members;
+      return `
+        <div class="pod-card">
+          <div class="pod-goal">${escapeHtml(p.goal)}</div>
+          <div class="market-title">${escapeHtml(p.name)}</div>
+          <div class="market-desc">${escapeHtml(p.description || '')}</div>
+          <div class="pod-members-row">
+            ${p.memberProfiles.map(m => `<div class="avatar" style="background:${getColor(m.first_name)}">${m.first_name[0]}${m.last_name[0]}</div>`).join('')}
+            <span class="pod-count">${p.members.length}/${p.max_members}</span>
+          </div>
+          <button class="btn btn-sm" style="margin-top:12px;width:100%" ${isMember ? 'disabled' : ''}>
+            ${isMember ? 'Lid' : isFull ? 'Vol' : 'Deelnemen'}
+          </button>
+        </div>`;
+    }).join('');
+  }
+
+  function initNewPod() {
+    document.getElementById('new-pod-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (DEV_MODE) {
+        DEMO_PODS.push({
+          id: 'pod-' + Date.now(),
+          name: document.getElementById('pod-name').value.trim(),
+          goal: document.getElementById('pod-goal').value.trim(),
+          description: document.getElementById('pod-desc').value.trim(),
+          members: [state.user.id], max_members: 6,
+          memberProfiles: [{ first_name: state.profile.first_name, last_name: state.profile.last_name }]
+        });
+      }
+      e.target.reset();
+      showToast('Pod gestart!', 'success');
+      goBack();
+    });
+  }
+
+  // --- Feature: Deal Flow ---
+
+  const DEMO_DEALS = [
+    { id: 'd1', author_id: 'demo-l32', title: 'Mede-investeerder gezocht voor Bitcoin mining faciliteit', description: 'We hebben een locatie in Zeeland met goedkoop stroomcontract. Zoeken 1-2 partners voor gezamenlijke investering in 10 Antminer S21 Pro machines.', deal_type: 'investering', status: 'open', profiles: { first_name: 'Leon', last_name: 'Kerckhaert' } },
+    { id: 'd2', author_id: 'demo-pieter', title: 'Spreker gezocht voor Lightning Workshop', description: 'We zoeken iemand die een hands-on Lightning workshop kan geven voor de mei-meetup. Vergoeding in sats.', deal_type: 'samenwerking', status: 'open', profiles: { first_name: 'Pieter', last_name: 'Voogt' } },
+    { id: 'd3', author_id: 'demo-user-1', title: 'Bitcoin betaalintegratie voor webshop', description: 'Ik bouw een BTCPay Server integratie voor Nederlandse webshops. Zoek beta-testers met een eigen shop.', deal_type: 'project', status: 'open', profiles: { first_name: 'Vincent', last_name: 'de Wit' } },
+    { id: 'd4', author_id: 'demo-l12', title: 'Compliance Officer - Blockrise', description: 'Blockrise zoekt een compliance officer met kennis van crypto regelgeving in NL/EU. Parttime mogelijk.', deal_type: 'vacature', status: 'open', profiles: { first_name: 'Jos', last_name: 'Lazet' } },
+  ];
+
+  let activeDealFilter = 'alle';
+
+  async function loadDeals() {
+    const list = document.getElementById('deals-list');
+    const deals = DEV_MODE ? DEMO_DEALS : [];
+    const filtered = activeDealFilter === 'alle' ? deals : deals.filter(d => d.deal_type === activeDealFilter);
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#129309;</div><div class="empty-state-text">Geen deals</div></div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(d => `
+      <div class="deal-card">
+        <span class="deal-type-badge ${d.deal_type}">${d.deal_type}</span>
+        <span class="deal-type-badge" style="background:${d.status === 'open' ? 'var(--success-dim)' : 'var(--border)'};color:${d.status === 'open' ? 'var(--success)' : 'var(--muted)'};margin-left:4px">${d.status}</span>
+        <div class="market-title">${escapeHtml(d.title)}</div>
+        <div class="market-desc">${escapeHtml(d.description || '')}</div>
+        <div class="market-author">${d.profiles.first_name} ${d.profiles.last_name}</div>
+      </div>`).join('');
+  }
+
+  function initDealFilters() {
+    document.getElementById('deal-tags').addEventListener('click', (e) => {
+      const tag = e.target.closest('.tag');
+      if (!tag) return;
+      activeDealFilter = tag.dataset.cat;
+      document.querySelectorAll('#deal-tags .tag').forEach(t => t.classList.toggle('active', t.dataset.cat === activeDealFilter));
+      loadDeals();
+    });
+  }
+
+  function initNewDeal() {
+    document.getElementById('new-deal-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (DEV_MODE) {
+        DEMO_DEALS.unshift({
+          id: 'd-' + Date.now(), author_id: state.user.id,
+          title: document.getElementById('deal-title').value.trim(),
+          description: document.getElementById('deal-desc').value.trim(),
+          deal_type: document.getElementById('deal-type').value,
+          status: 'open', profiles: { first_name: state.profile.first_name, last_name: state.profile.last_name }
+        });
+      }
+      e.target.reset();
+      showToast('Deal geplaatst!', 'success');
+      goBack();
+    });
+  }
+
+  // --- Feature: Bitcoin Educatie Paden ---
+
+  const DEMO_EDU = [
+    { id: 'ep1', title: 'Bitcoin Basics', description: 'Begrijp wat Bitcoin is en hoe het werkt', difficulty: 'beginner', lessons: [
+      { id: 'les1', title: 'Wat is geld?', done: true },
+      { id: 'les2', title: 'Het probleem met fiatgeld', done: true },
+      { id: 'les3', title: 'Wat is Bitcoin?', done: true },
+      { id: 'les4', title: 'Hoe werkt de blockchain?', done: false },
+      { id: 'les5', title: 'Je eerste wallet', done: false },
+      { id: 'les6', title: 'Bitcoin kopen in Nederland', done: false },
+    ]},
+    { id: 'ep2', title: 'Bitcoin Verdiepen', description: 'Van HODLen tot Lightning Network', difficulty: 'intermediate', lessons: [
+      { id: 'les7', title: 'UTXO model uitgelegd', done: false },
+      { id: 'les8', title: 'Mining en proof-of-work', done: false },
+      { id: 'les9', title: 'Lightning Network basics', done: false },
+      { id: 'les10', title: 'Multisig en veiligheid', done: false },
+      { id: 'les11', title: 'Privacy op Bitcoin', done: false },
+    ]},
+    { id: 'ep3', title: 'Bitcoin voor Ondernemers', description: 'Bitcoin in je bedrijf: treasury, betalingen, strategie', difficulty: 'advanced', lessons: [
+      { id: 'les12', title: 'Bitcoin treasury strategie', done: false },
+      { id: 'les13', title: 'BTCPay Server opzetten', done: false },
+      { id: 'les14', title: 'Boekhoudkundige verwerking', done: false },
+      { id: 'les15', title: 'Belasting en Bitcoin in NL', done: false },
+    ]},
+  ];
+
+  async function loadEducatie() {
+    const list = document.getElementById('educatie-paths');
+    const paths = DEV_MODE ? DEMO_EDU : [];
+
+    list.innerHTML = paths.map(p => {
+      const done = p.lessons.filter(l => l.done).length;
+      const pct = Math.round(done / p.lessons.length * 100);
+      return `
+        <div class="edu-path-card" onclick="App.showEduPath('${p.id}')">
+          <span class="edu-difficulty ${p.difficulty}">${p.difficulty}</span>
+          <div class="market-title">${escapeHtml(p.title)}</div>
+          <div class="market-desc">${escapeHtml(p.description)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:8px">${done}/${p.lessons.length} lessen &bull; ${pct}% compleet</div>
+          <div class="edu-progress"><div class="edu-progress-fill" style="width:${pct}%"></div></div>
+        </div>`;
+    }).join('');
+  }
+
+  function showEduPath(id) {
+    const p = DEMO_EDU.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('educatie-pad-content').innerHTML = `
+      <span class="edu-difficulty ${p.difficulty}">${p.difficulty}</span>
+      <h2 style="margin:12px 0">${escapeHtml(p.title)}</h2>
+      <p class="text-muted" style="margin-bottom:20px">${escapeHtml(p.description)}</p>
+      ${p.lessons.map((l, i) => `
+        <div class="edu-lesson" onclick="App.toggleLesson('${id}','${l.id}')">
+          <div class="edu-lesson-num ${l.done ? 'done' : ''}">${l.done ? '&#10003;' : i + 1}</div>
+          <div class="edu-lesson-title">${escapeHtml(l.title)}</div>
+        </div>`).join('')}
+    `;
+    navigate('educatie-pad');
+  }
+
+  function toggleLesson(pathId, lessonId) {
+    const p = DEMO_EDU.find(x => x.id === pathId);
+    if (!p) return;
+    const l = p.lessons.find(x => x.id === lessonId);
+    if (!l) return;
+    l.done = !l.done;
+    if (l.done) {
+      awardSats(100, 'Les afgerond: ' + l.title);
+    }
+    showEduPath(pathId);
+  }
+
+  // --- Feature: Sats Verdien-Systeem ---
+
+  function awardSats(amount, reason) {
+    if (!state.profile) return;
+    state.profile.sats_balance = (state.profile.sats_balance || 0) + amount;
+    // Update in members array too
+    const me = state.members.find(m => m.id === state.user?.id);
+    if (me) me.sats_balance = state.profile.sats_balance;
+    showToast(`+${amount} sats: ${reason}`, 'success');
+
+    if (!DEV_MODE && supabase) {
+      supabase.rpc('increment_sats_balance', { user_id_input: state.user.id, amount_input: amount });
+      supabase.from('sats_transactions').insert({ user_id: state.user.id, amount, type: 'earn', reason });
+    }
+  }
+
+  // Track actions for sats
+  let satsAwarded = {};
+  function tryAwardSats(key, amount, reason) {
+    if (satsAwarded[key]) return;
+    satsAwarded[key] = true;
+    awardSats(amount, reason);
+  }
+
+  // --- Feature: Member Spotlight ---
+
+  function getSpotlightMember() {
+    // Pick a member based on the current week
+    const weekNum = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+    const eligible = state.members.filter(m => m.id !== state.user?.id && m.first_name);
+    if (!eligible.length) return null;
+    return eligible[weekNum % eligible.length];
+  }
+
+  function renderSpotlight() {
+    const m = getSpotlightMember();
+    if (!m) return '';
+    const initials = (m.first_name?.[0] || '') + (m.last_name?.[0] || '');
+    return `
+      <div class="spotlight-banner" onclick="App.showProfile('${m.id}')">
+        <div class="avatar" style="width:40px;height:40px;font-size:14px;background:${getColor(m.id)};margin:0">${initials}</div>
+        <div>
+          <div class="spotlight-label">Member Spotlight</div>
+          <div class="spotlight-name">${m.first_name} ${m.last_name}</div>
+          <div class="spotlight-sub">${[m.job_title, m.company].filter(Boolean).join(' bij ')}</div>
+        </div>
+      </div>`;
+  }
+
+  // --- Feature: DM vanuit Profiel ---
+  // Already handled via openDm — just need button in showProfile
+
+  // --- Feature: Notificatie Badges ---
+
+  let unreadChannels = new Set();
+
+  function updateNavBadges() {
+    const chatNav = document.querySelector('.nav-item[data-screen="chat"]');
+    if (!chatNav) return;
+    const existing = chatNav.querySelector('.nav-badge');
+    if (unreadChannels.size > 0 && !existing) {
+      const badge = document.createElement('div');
+      badge.className = 'nav-badge';
+      chatNav.appendChild(badge);
+    } else if (unreadChannels.size === 0 && existing) {
+      existing.remove();
+    }
+  }
+
+  // Simulate some unread in demo
+  function initUnreadTracking() {
+    if (DEV_MODE) {
+      unreadChannels.add('ch3');
+      unreadChannels.add('ch4');
+      updateNavBadges();
+    }
+  }
+
+  // --- Feature: Chat Images ---
+
+  let pendingChatImage = null;
+
+  function attachChatImage(input) {
+    if (!input.files.length) return;
+    const file = input.files[0];
+    const preview = document.getElementById('chat-image-preview');
+    const img = document.getElementById('chat-preview-img');
+    img.src = URL.createObjectURL(file);
+    preview.style.display = 'flex';
+    pendingChatImage = file;
+  }
+
+  function removeChatImage() {
+    pendingChatImage = null;
+    document.getElementById('chat-image-preview').style.display = 'none';
+    document.getElementById('chat-image-input').value = '';
+  }
+
+  // --- Feature: Content Feed ---
+
+  const DEMO_FEED = [
+    { type: 'article', title: 'Bitcoin breekt $100k grens', excerpt: 'Na maanden van consolidatie heeft Bitcoin eindelijk de psychologische grens doorbroken.', author: 'Jeroen Blokland', date: '2026-04-09' },
+    { type: 'event_recap', title: 'Recap: Monthly Meetup Maart', excerpt: '56 aanwezigen, 3 presentaties, en een onvergetelijke avond. Lees het verslag.', author: 'Bram Kanstein', date: '2026-04-02' },
+    { type: 'spotlight', title: 'Member Spotlight: Morris Verdonk', excerpt: 'Van IT-security naar Bitcoin custody. Hoe Morris zijn expertise inzet voor de community.', author: 'DBE Redactie', date: '2026-03-28' },
+    { type: 'analysis', title: 'Macro Weekly: Fed, ETF flows & halving', excerpt: 'Wekelijkse analyse van de belangrijkste Bitcoin macro-ontwikkelingen.', author: 'Khing Oei', date: '2026-03-25', exclusive: true },
+  ];
+
+  async function loadFeed() {
+    const list = document.getElementById('feed-list');
+    const feed = DEV_MODE ? DEMO_FEED : [];
+
+    if (!feed.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128240;</div><div class="empty-state-text">Nog geen berichten</div></div>';
+      return;
+    }
+
+    list.innerHTML = feed.map(f => `
+      <div class="feed-card">
+        <div class="feed-meta">
+          <span class="feed-type">${f.type.replace('_', ' ')}</span>
+          ${f.exclusive ? '<span class="feed-type" style="background:var(--purple-dim);color:var(--purple)">Exclusief</span>' : ''}
+          <span>${f.date}</span>
+          <span>&bull; ${f.author}</span>
+        </div>
+        <div class="market-title">${escapeHtml(f.title)}</div>
+        <div class="market-desc">${escapeHtml(f.excerpt)}</div>
+      </div>`).join('');
+  }
+
+  // --- Feature: Admin Dashboard ---
+
+  async function loadAdmin() {
+    const stats = document.getElementById('admin-stats');
+    const qList = document.getElementById('admin-questions');
+
+    const totalMembers = state.members.length;
+    const activeToday = DEV_MODE ? 12 : 0;
+    const totalEvents = DEV_MODE ? DEMO.events.length : 0;
+    const totalListings = DEV_MODE ? state.listings.length : 0;
+    const totalMessages = DEV_MODE ? 47 : 0;
+    const totalSats = state.members.reduce((s, m) => s + (m.sats_balance || 0), 0);
+
+    stats.innerHTML = `
+      <div class="admin-grid">
+        <div class="admin-stat"><div class="admin-stat-value">${totalMembers}</div><div class="admin-stat-label">Leden</div></div>
+        <div class="admin-stat"><div class="admin-stat-value">${activeToday}</div><div class="admin-stat-label">Actief vandaag</div></div>
+        <div class="admin-stat"><div class="admin-stat-value">${totalEvents}</div><div class="admin-stat-label">Events</div></div>
+        <div class="admin-stat"><div class="admin-stat-value">${totalListings}</div><div class="admin-stat-label">Marktplaats</div></div>
+        <div class="admin-stat"><div class="admin-stat-value">${totalMessages}</div><div class="admin-stat-label">Berichten</div></div>
+        <div class="admin-stat"><div class="admin-stat-value">${formatSats(totalSats)}</div><div class="admin-stat-label">Totaal sats</div></div>
+      </div>`;
+
+    // Onbeantwoorde vragen
+    const unanswered = DEV_MODE ? DEMO_QUESTIONS.filter(q => !q.is_answered) : [];
+    if (unanswered.length) {
+      qList.innerHTML = unanswered.map(q => `
+        <div class="question-card">
+          <div class="question-text">"${escapeHtml(q.question)}"</div>
+          <button class="btn btn-sm" style="margin-top:8px">Beantwoorden</button>
+        </div>`).join('');
+    } else {
+      qList.innerHTML = '<p class="text-muted" style="font-size:13px">Alle vragen beantwoord!</p>';
+    }
+  }
+
+  // --- Feature: Event Check-in QR ---
+  // Added to showEventDetail — generates QR for admin to share
+
   // --- Feature 9: Nostr Identity ---
   // Handled in profile edit form (nostr_npub field added to HTML)
-  // Display in profile detail
 
   // --- Feature 10: Anonieme Vragenbox ---
 
@@ -1587,6 +1970,10 @@ const App = (() => {
     initQuestionForm();
     initTicker();
     initPushNotifications();
+    initNewPod();
+    initDealFilters();
+    initNewDeal();
+    initUnreadTracking();
 
     // Offline detection
     window.addEventListener('online', () => {
@@ -1622,7 +2009,11 @@ const App = (() => {
     votePoll,
     addPollOption,
     showArticle,
+    showEduPath,
+    toggleLesson,
     requestPushPermission,
+    attachChatImage,
+    removeChatImage,
     init
   };
 

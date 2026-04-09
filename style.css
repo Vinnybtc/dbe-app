@@ -809,6 +809,158 @@ select.input { appearance: none; }
   cursor: pointer;
 }
 
+/* ---- Chat Image ---- */
+.btn-attach {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.04); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; flex-shrink: 0;
+  transition: color 0.15s;
+}
+.btn-attach:hover { color: var(--accent); }
+.chat-image-preview {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 24px; background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.chat-image-preview img {
+  height: 60px; border-radius: var(--radius-sm); object-fit: cover;
+}
+.chat-image-preview button {
+  background: var(--danger-dim); color: var(--danger);
+  border: none; border-radius: 50%; width: 24px; height: 24px;
+  cursor: pointer; font-size: 12px;
+}
+.chat-bubble-img {
+  max-width: 240px; border-radius: var(--radius-sm);
+  margin-top: 6px; cursor: pointer;
+}
+
+/* ---- Spotlight Banner ---- */
+.spotlight-banner {
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: var(--radius); padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.spotlight-banner:hover { background: rgba(230, 141, 60, 0.18); }
+.spotlight-label { font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.spotlight-name { font-size: 14px; font-weight: 500; }
+.spotlight-sub { font-size: 12px; color: var(--muted); }
+
+/* ---- Deal Flow ---- */
+.deal-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.deal-card:hover { border-color: var(--border-strong); }
+.deal-type-badge {
+  display: inline-block; padding: 2px 8px;
+  border-radius: var(--radius-sm); font-size: 10px; font-weight: 590;
+  margin-bottom: 6px;
+}
+.deal-type-badge.investering { background: var(--accent-dim); color: var(--accent); }
+.deal-type-badge.samenwerking { background: var(--success-dim); color: var(--success); }
+.deal-type-badge.project { background: var(--purple-dim); color: var(--purple); }
+.deal-type-badge.vacature { background: rgba(88,166,255,0.12); color: #58A6FF; }
+.deal-status { font-size: 11px; color: var(--text-dim); margin-top: 8px; }
+
+/* ---- Pods ---- */
+.pod-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 10px;
+}
+.pod-goal {
+  font-size: 12px; color: var(--accent); font-weight: 590;
+  margin-bottom: 4px;
+}
+.pod-members-row {
+  display: flex; gap: -4px; margin-top: 10px;
+}
+.pod-members-row .avatar {
+  width: 28px; height: 28px; font-size: 10px;
+  margin: 0 -2px 0 0; border: 2px solid var(--bg);
+}
+.pod-count { font-size: 12px; color: var(--muted); margin-left: 8px; }
+
+/* ---- Educatie ---- */
+.edu-path-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 12px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.edu-path-card:hover { border-color: var(--border-strong); }
+.edu-difficulty {
+  display: inline-block; padding: 2px 8px;
+  border-radius: var(--radius-sm); font-size: 10px; font-weight: 590;
+  margin-bottom: 8px;
+}
+.edu-difficulty.beginner { background: var(--success-dim); color: var(--success); }
+.edu-difficulty.intermediate { background: var(--accent-dim); color: var(--accent); }
+.edu-difficulty.advanced { background: var(--purple-dim); color: var(--purple); }
+.edu-progress {
+  height: 4px; background: var(--border-visible);
+  border-radius: 2px; margin-top: 12px; overflow: hidden;
+}
+.edu-progress-fill {
+  height: 100%; background: var(--accent); border-radius: 2px;
+  transition: width 0.5s;
+}
+.edu-lesson {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.edu-lesson-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface-raised); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 590; flex-shrink: 0;
+}
+.edu-lesson-num.done { background: var(--accent); color: #fff; }
+.edu-lesson-title { font-size: 14px; }
+
+/* ---- Admin Stats ---- */
+.admin-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;
+  margin-bottom: 20px;
+}
+.admin-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.admin-stat-value {
+  font-family: 'Fragment Mono', monospace;
+  font-size: 28px; font-weight: 400; color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.admin-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ---- Feed ---- */
+.feed-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 10px;
+}
+.feed-meta {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px; font-size: 12px; color: var(--muted);
+}
+.feed-type {
+  display: inline-block; padding: 2px 6px;
+  border-radius: 4px; font-size: 10px; font-weight: 590;
+  background: var(--accent-dim); color: var(--accent);
+}
+
+/* ---- QR Check-in ---- */
+.checkin-qr {
+  width: 160px; height: 160px; background: #fff;
+  border-radius: var(--radius); margin: 16px auto;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px;
+}
+
 /* ---- Offline Banner ---- */
 .offline-banner {
   position: fixed; top: 0; left: 0; right: 0;

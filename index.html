@@ -65,6 +65,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span>Vragenbox</span>
       </div>
+      <div class="nav-item" data-screen="deals" onclick="navigate('deals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span>Deals</span>
+      </div>
+      <div class="nav-item" data-screen="pods" onclick="navigate('pods')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Pods</span>
+      </div>
+      <div class="nav-item" data-screen="educatie" onclick="navigate('educatie')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+        <span>Educatie</span>
+      </div>
+      <div class="nav-item nav-admin" data-screen="admin" onclick="navigate('admin')" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2m-9-11h2m18 0h2m-3.64-6.36l-1.42 1.42M6.06 17.94l-1.42 1.42m0-13.86l1.42 1.42m11.88 11.88l1.42 1.42"/></svg>
+        <span>Admin</span>
+      </div>
     </div>
     <div class="nav-bottom">
       <div class="nav-item" data-screen="mijn-profiel" onclick="navigate('mijn-profiel')">
@@ -334,9 +350,15 @@
     </div>
     <div class="chat-messages" id="chat-messages"></div>
     <form class="chat-input-bar" id="chat-send-form">
+      <label class="btn-attach" for="chat-image-input">&#128247;</label>
+      <input type="file" id="chat-image-input" accept="image/*" style="display:none" onchange="App.attachChatImage(this)">
       <input type="text" class="input chat-input" id="chat-input" placeholder="Schrijf een bericht..." autocomplete="off">
       <button type="submit" class="btn btn-send">&#8593;</button>
     </form>
+    <div class="chat-image-preview" id="chat-image-preview" style="display:none">
+      <img id="chat-preview-img">
+      <button type="button" onclick="App.removeChatImage()">&#10005;</button>
+    </div>
   </div>
 
   <!-- Bitcoin Ticker (overlay bar) -->
@@ -488,6 +510,127 @@
     </div>
   </div>
 
+  <!-- Bitcoin Educatie -->
+  <div class="screen" id="screen-educatie">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Bitcoin Educatie</div>
+      </div>
+      <div id="educatie-paths"></div>
+    </div>
+  </div>
+
+  <!-- Educatie Pad Detail -->
+  <div class="screen" id="screen-educatie-pad">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div id="educatie-pad-content"></div>
+    </div>
+  </div>
+
+  <!-- Deal Flow -->
+  <div class="screen" id="screen-deals">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Deal Flow</div>
+        <button class="btn-outline btn-sm" onclick="navigate('deal-new')">+ Deal</button>
+      </div>
+      <div class="tags" id="deal-tags">
+        <div class="tag active" data-cat="alle">Alle</div>
+        <div class="tag" data-cat="investering">Investering</div>
+        <div class="tag" data-cat="samenwerking">Samenwerking</div>
+        <div class="tag" data-cat="project">Project</div>
+        <div class="tag" data-cat="vacature">Vacature</div>
+      </div>
+      <div id="deals-list"></div>
+    </div>
+  </div>
+
+  <!-- Nieuwe Deal -->
+  <div class="screen" id="screen-deal-new">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div class="page-title" style="margin-bottom:20px">Nieuwe deal</div>
+      <form id="new-deal-form" class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Titel *</label>
+          <input type="text" class="input" id="deal-title" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Beschrijving</label>
+          <textarea class="input textarea" id="deal-desc" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type *</label>
+          <select class="input" id="deal-type" required>
+            <option value="investering">Investering</option>
+            <option value="samenwerking">Samenwerking</option>
+            <option value="project">Project</option>
+            <option value="vacature">Vacature</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-full">Plaatsen</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Accountability Pods -->
+  <div class="screen" id="screen-pods">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Pods</div>
+        <button class="btn-outline btn-sm" onclick="navigate('pod-new')">+ Pod</button>
+      </div>
+      <p class="text-muted" style="margin-bottom:16px">Kleine groepjes van 4-6 leden die samen een doel nastreven.</p>
+      <div id="pods-list"></div>
+    </div>
+  </div>
+
+  <!-- Nieuwe Pod -->
+  <div class="screen" id="screen-pod-new">
+    <div class="screen-scroll">
+      <button class="btn-back" onclick="goBack()">&larr; Terug</button>
+      <div class="page-title" style="margin-bottom:20px">Nieuwe pod</div>
+      <form id="new-pod-form" class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Naam *</label>
+          <input type="text" class="input" id="pod-name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Doel</label>
+          <input type="text" class="input" id="pod-goal" placeholder="bijv. Elke week DCA&apos;en">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Beschrijving</label>
+          <textarea class="input textarea" id="pod-desc" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-full">Pod starten</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Content Feed -->
+  <div class="screen" id="screen-feed">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Feed</div>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div class="screen" id="screen-admin">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <div class="page-title">Admin</div>
+      </div>
+      <div id="admin-stats"></div>
+      <div class="page-title" style="font-size:16px;margin-top:24px;margin-bottom:12px">Onbeantwoorde vragen</div>
+      <div id="admin-questions"></div>
+    </div>
+  </div>
+
   <!-- Meer Menu -->
   <div class="screen" id="screen-meer">
     <div class="screen-scroll">
@@ -499,6 +642,10 @@
           <div class="meer-icon">&#128218;</div>
           <div class="meer-label">Kennisbank</div>
         </div>
+        <div class="meer-item" onclick="navigate('educatie')">
+          <div class="meer-icon">&#127891;</div>
+          <div class="meer-label">Educatie</div>
+        </div>
         <div class="meer-item" onclick="navigate('polls')">
           <div class="meer-icon">&#128499;</div>
           <div class="meer-label">Polls</div>
@@ -507,6 +654,14 @@
           <div class="meer-icon">&#127942;</div>
           <div class="meer-label">Leaderboard</div>
         </div>
+        <div class="meer-item" onclick="navigate('deals')">
+          <div class="meer-icon">&#129309;</div>
+          <div class="meer-label">Deal Flow</div>
+        </div>
+        <div class="meer-item" onclick="navigate('pods')">
+          <div class="meer-icon">&#128101;</div>
+          <div class="meer-label">Pods</div>
+        </div>
         <div class="meer-item" onclick="navigate('match')">
           <div class="meer-icon">&#128269;</div>
           <div class="meer-label">Ik zoek...</div>
@@ -514,6 +669,14 @@
         <div class="meer-item" onclick="navigate('vragen')">
           <div class="meer-icon">&#10067;</div>
           <div class="meer-label">Vragenbox</div>
+        </div>
+        <div class="meer-item" onclick="navigate('feed')">
+          <div class="meer-icon">&#128240;</div>
+          <div class="meer-label">Feed</div>
+        </div>
+        <div class="meer-item" id="meer-admin" style="display:none" onclick="navigate('admin')">
+          <div class="meer-icon">&#9881;</div>
+          <div class="meer-label">Admin</div>
         </div>
         <div class="meer-item" onclick="navigate('mijn-profiel')">
           <div class="meer-icon">&#128100;</div>
