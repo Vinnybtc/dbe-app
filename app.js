@@ -9,8 +9,8 @@ const App = (() => {
   const SUPABASE_URL = 'https://jvnbdbcwypgumfuclfha.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2bmJkYmN3eXBndW1mdWNsZmhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjA3NjYsImV4cCI6MjA5MTMzNjc2Nn0.ZH49f4A-xnzQTkipJRqyaRr_vbX4tvMFhp-n69PDqO4';
 
-  // Dev mode: als credentials niet ingevuld, gebruik demo data
-  const DEV_MODE = SUPABASE_URL.includes('YOUR_PROJECT');
+  // Dev mode: via ?demo in URL of als credentials niet ingevuld
+  const DEV_MODE = SUPABASE_URL.includes('YOUR_PROJECT') || new URLSearchParams(window.location.search).has('demo');
 
   let supabase = null;
   if (!DEV_MODE) {
