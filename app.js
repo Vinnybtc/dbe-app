@@ -175,6 +175,7 @@ const App = (() => {
 
     // Laad data per scherm
     switch (screen) {
+      case 'home': if (typeof Wow !== 'undefined') Wow.renderDashboard(); break;
       case 'leden': loadMembers(); break;
       case 'markt': loadListings(); break;
       case 'events': loadEvents(); break;
@@ -245,7 +246,7 @@ const App = (() => {
 
   function showMainApp() {
     document.getElementById('main-nav').style.display = 'flex';
-    navigate('leden');
+    navigate('home');
     if (state.profile?.membership_tier === 'admin') {
       document.querySelectorAll('#btn-new-event, #btn-new-poll, .nav-admin, #meer-admin').forEach(el => {
         if (el) el.style.display = '';
@@ -2142,6 +2143,7 @@ const App = (() => {
     votePoll,
     addPollOption,
     showArticle,
+    state,
     showEduPath,
     toggleLesson,
     requestPushPermission,
