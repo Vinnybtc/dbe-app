@@ -32,14 +32,7 @@ const Wow = (() => {
     setTimeout(() => container.remove(), 3000);
   }
 
-  // Patch App.showToast to trigger confetti on sats
-  const origShowToast = App.showToast;
-  App.showToast = function(msg, type) {
-    origShowToast(msg, type);
-    if (type === 'success' && msg.includes('sats')) {
-      satsConfetti();
-    }
-  };
+  // Patch App.showToast to trigger confetti on sats (deferred to init)
 
   // --- Animated Counter ---
 
@@ -284,6 +277,7 @@ const Wow = (() => {
   // --- Page Transitions ---
 
   function enableTransitions() {
+    if (typeof App === 'undefined' || !App.navigate) return;
     // Override navigate to add slide effect
     const origNavigate = App.navigate;
     let lastScreen = null;
@@ -317,6 +311,17 @@ const Wow = (() => {
   // --- Init ---
 
   function init() {
+    // Patch App.showToast for confetti
+    if (typeof App !== 'undefined' && App.showToast) {
+      const origShowToast = App.showToast;
+      App.showToast = function(msg, type) {
+        origShowToast(msg, type);
+        if (type === 'success' && msg.includes('sats')) {
+          satsConfetti();
+        }
+      };
+    }
+
     enableTransitions();
 
     // Observe for new countable elements
