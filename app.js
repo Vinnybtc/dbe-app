@@ -17,6 +17,10 @@ const App = (() => {
   // Functie om demo mode handmatig te activeren (via knop op login scherm)
   function enableDemoMode() {
     DEV_MODE = true;
+    // Verwijder auth listener zodat die niet interfereert
+    if (supabase) {
+      try { supabase.auth.onAuthStateChange(() => {}); } catch(e) {}
+    }
     devLogin();
   }
 

@@ -142,7 +142,7 @@
       <div class="wallets">Ondersteund: <span>Alby &bull; Zeus &bull; Phoenix &bull; Breez</span></div>
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);width:100%;max-width:300px">
-        <button class="btn-outline btn-full" onclick="App.enableDemoMode()" style="color:var(--accent);border-color:var(--accent-border)">Bekijk demo</button>
+        <button class="btn-outline btn-full" style="color:var(--accent);border-color:var(--accent-border)" onclick="try{App.enableDemoMode()}catch(e){alert('Error: '+e.message)}">Bekijk demo</button>
       </div>
     </div>
   </div>
