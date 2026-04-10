@@ -152,7 +152,7 @@ const Extras = (() => {
           </tbody>
         </table>
       </div>
-      ${Quotes.renderQuoteCard()}`;
+      ${typeof Quotes !== 'undefined' ? Quotes.renderQuoteCard() : ''}`;
   }
 
   // --- 5. Streak Tracker ---

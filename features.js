@@ -82,7 +82,7 @@ const Features = (() => {
     list.innerHTML = DEMO_BOUNTIES.map(b => `
       <div class="deal-card">
         <span class="deal-type-badge ${b.status === 'open' ? 'investering' : 'samenwerking'}">${b.status}</span>
-        <span style="float:right;font-family:'Fragment Mono',monospace;color:var(--accent);font-weight:590">&#9889; ${App.showToast ? '' : ''}${(b.reward_sats/1000).toFixed(0)}k sats</span>
+        <span style="float:right;font-family:'Fragment Mono',monospace;color:var(--accent);font-weight:590">&#9889; ${(b.reward_sats/1000).toFixed(0)}k sats</span>
         <div class="market-title" style="margin-top:4px">${b.title}</div>
         <div class="market-desc">${b.description}</div>
         <div class="market-author">Door ${b.author} ${b.claimedBy ? '&bull; Geclaimd door ' + b.claimedBy : ''}</div>

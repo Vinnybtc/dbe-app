@@ -187,7 +187,8 @@ const App = (() => {
       case 'vragen': loadQuestions(); break;
       case 'profiel-edit': fillEditForm(); break;
       case 'deals': loadDeals(); break;
-      case 'pods': loadPods(); break;
+      case 'ringen': loadPods(); break;
+      case 'match': /* match form is static, no load needed */ break;
       case 'educatie': loadEducatie(); break;
       case 'feed': loadFeed(); break;
       case 'videos': loadVideos(); break;
@@ -202,7 +203,6 @@ const App = (() => {
       case 'kaart': Features.renderMap(); break;
       case 'whales': Features.renderWhaleAlert(); break;
       case 'btc24': Features.renderBitcoin24(); break;
-      case 'ringen': loadPods(); break;
       case 'dictionary': if (typeof Extras !== 'undefined') Extras.renderDictionary(); break;
       case 'converter': if (typeof Extras !== 'undefined') Extras.renderConverter(); break;
       case 'reading': if (typeof Extras !== 'undefined') Extras.renderReadingList(); break;

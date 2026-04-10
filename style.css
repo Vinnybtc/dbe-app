@@ -1046,12 +1046,45 @@ select.input { appearance: none; }
 
 /* ---- Page Transitions ---- */
 .screen-enter {
-  animation: screenSlideIn 0.25s ease-out;
+  animation: screenSlideIn 0.2s ease-out;
 }
 @keyframes screenSlideIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---- Active Nav Glow ---- */
+@media (min-width: 768px) {
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 16px; border-radius: 0 3px 3px 0;
+    background: var(--accent);
+  }
+}
+
+/* ---- Card hover lift ---- */
+.member-card:hover, .market-item:hover, .event-card:hover,
+.deal-card:hover, .kennis-card:hover, .video-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.member-card, .market-item, .event-card, .deal-card,
+.kennis-card, .video-card {
+  transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+/* ---- Meer Menu Categories ---- */
+.meer-section-label {
+  grid-column: 1 / -1;
+  font-size: 10px; font-weight: 700;
+  color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 0 0;
+}
+
+/* ---- Smooth scroll ---- */
+.screen-scroll { scroll-behavior: smooth; }
 
 /* ---- Dashboard ---- */
 .dashboard-greeting { margin-bottom: 24px; }
