@@ -193,7 +193,7 @@ const App = (() => {
       case 'vragen': loadQuestions(); break;
       case 'profiel-edit': fillEditForm(); break;
       case 'deals': loadDeals(); break;
-      case 'ringen': loadPods(); break;
+      case 'circles': loadCircles(); break;
       case 'match': /* match form is static, no load needed */ break;
       case 'educatie': loadEducatie(); break;
       case 'feed': loadFeed(); break;
@@ -1514,9 +1514,9 @@ const App = (() => {
     ).join('');
   }
 
-  // --- Feature: Accountability Pods ---
+  // --- Feature: Circles ---
 
-  const DEMO_PODS = [
+  const DEMO_CIRCLES = [
     { id: 'pod1', name: 'DCA Discipline', goal: 'Elke week Bitcoin kopen', description: 'We houden elkaar scherp op consistent stacking.', members: ['demo-user-1', 'demo-l09', 'demo-l14', 'demo-l35'], max_members: 6, memberProfiles: [
       { first_name: 'Vincent', last_name: 'de Wit' }, { first_name: 'Jamie', last_name: 'van Vliet' },
       { first_name: 'Lars', last_name: 'Heerink' }, { first_name: 'Mauro', last_name: 'Halve' }
@@ -1532,12 +1532,12 @@ const App = (() => {
     ]},
   ];
 
-  async function loadPods() {
-    const list = document.getElementById('pods-list');
-    const pods = DEV_MODE ? DEMO_PODS : [];
+  async function loadCircles() {
+    const list = document.getElementById('circles-list');
+    const pods = DEV_MODE ? DEMO_CIRCLES : [];
 
     if (!pods.length) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128101;</div><div class="empty-state-text">Nog geen pods</div></div>';
+      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128101;</div><div class="empty-state-text">Nog geen circles</div></div>';
       return;
     }
 
@@ -1545,13 +1545,13 @@ const App = (() => {
       const isMember = p.members.includes(state.user?.id);
       const isFull = p.members.length >= p.max_members;
       return `
-        <div class="pod-card">
-          <div class="pod-goal">${escapeHtml(p.goal)}</div>
+        <div class="circle-card">
+          <div class="circle-goal">${escapeHtml(p.goal)}</div>
           <div class="market-title">${escapeHtml(p.name)}</div>
           <div class="market-desc">${escapeHtml(p.description || '')}</div>
-          <div class="pod-members-row">
+          <div class="circle-members-row">
             ${p.memberProfiles.map(m => `<div class="avatar" style="background:${getColor(m.first_name)}">${m.first_name[0]}${m.last_name[0]}</div>`).join('')}
-            <span class="pod-count">${p.members.length}/${p.max_members}</span>
+            <span class="circle-count">${p.members.length}/${p.max_members}</span>
           </div>
           <button class="btn btn-sm" style="margin-top:12px;width:100%" ${isMember ? 'disabled' : ''}>
             ${isMember ? 'Lid' : isFull ? 'Vol' : 'Deelnemen'}
@@ -1560,21 +1560,21 @@ const App = (() => {
     }).join('');
   }
 
-  function initNewPod() {
-    document.getElementById('new-pod-form').addEventListener('submit', async (e) => {
+  function initNewCircle() {
+    document.getElementById('new-circle-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (DEV_MODE) {
-        DEMO_PODS.push({
-          id: 'pod-' + Date.now(),
-          name: document.getElementById('pod-name').value.trim(),
-          goal: document.getElementById('pod-goal').value.trim(),
-          description: document.getElementById('pod-desc').value.trim(),
+        DEMO_CIRCLES.push({
+          id: 'circle-' + Date.now(),
+          name: document.getElementById('circle-name').value.trim(),
+          goal: document.getElementById('circle-goal').value.trim(),
+          description: document.getElementById('circle-desc').value.trim(),
           members: [state.user.id], max_members: 6,
           memberProfiles: [{ first_name: state.profile.first_name, last_name: state.profile.last_name }]
         });
       }
       e.target.reset();
-      showToast('Pod gestart!', 'success');
+      showToast('Circle gestart!', 'success');
       goBack();
     });
   }
@@ -2128,7 +2128,7 @@ const App = (() => {
     initQuestionForm();
     initTicker();
     initPushNotifications();
-    initNewPod();
+    initNewCircle();
     initDealFilters();
     initNewDeal();
     initUnreadTracking();
