@@ -360,11 +360,10 @@ const App = (() => {
     renderMemberTags(['Alle', ...Array.from(allTags).sort()]);
 
     // Spotlight banner
-    const grid = document.getElementById('members-grid');
     const spotlightHtml = renderSpotlight();
     if (spotlightHtml) {
-      const container = grid.parentElement;
-      let existing = container.querySelector('.spotlight-banner');
+      const gridContainer = grid.parentElement;
+      let existing = gridContainer.querySelector('.spotlight-banner');
       if (existing) existing.remove();
       grid.insertAdjacentHTML('beforebegin', spotlightHtml);
     }
