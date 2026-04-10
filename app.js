@@ -9,10 +9,16 @@ const App = (() => {
   const SUPABASE_URL = 'https://jvnbdbcwypgumfuclfha.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2bmJkYmN3eXBndW1mdWNsZmhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjA3NjYsImV4cCI6MjA5MTMzNjc2Nn0.ZH49f4A-xnzQTkipJRqyaRr_vbX4tvMFhp-n69PDqO4';
 
-  // Dev mode: via ?demo in URL, of als credentials niet ingevuld
-  const DEV_MODE = SUPABASE_URL.includes('YOUR_PROJECT')
+  // Dev mode: via ?demo in URL, #demo hash, of als credentials niet ingevuld
+  let DEV_MODE = SUPABASE_URL.includes('YOUR_PROJECT')
     || window.location.search.includes('demo')
     || window.location.hash.includes('demo');
+
+  // Functie om demo mode handmatig te activeren (via knop op login scherm)
+  function enableDemoMode() {
+    DEV_MODE = true;
+    devLogin();
+  }
 
   let supabase = null;
   if (!DEV_MODE) {
@@ -2165,6 +2171,7 @@ const App = (() => {
     addPollOption,
     showArticle,
     state,
+    enableDemoMode,
     showEduPath,
     toggleLesson,
     requestPushPermission,
