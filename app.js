@@ -1942,25 +1942,11 @@ const App = (() => {
   const MAIXS_ORG_ID = 'e95a8efb-ace3-46cb-89cf-deac0dd74dcc';
 
   function loadChatbot() {
-    const container = document.getElementById('chatbot-container');
-    // Try to embed mAIxs chat widget
-    // In production this would be the actual mAIxs embed URL
-    container.innerHTML = `
-      <div class="chatbot-fallback">
-        <div class="chatbot-fallback-icon">&#129302;</div>
-        <h3>DBE Assistent</h3>
-        <p class="text-muted" style="max-width:300px">De AI-assistent is geconfigureerd in mAIxs (org: ${MAIXS_ORG_ID}). Zodra het mAIxs dashboard live is, verschijnt hier de chatbot.</p>
-        <div style="margin-top:16px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-align:left;max-width:400px;width:100%">
-          <div style="font-size:12px;color:var(--accent);font-weight:590;margin-bottom:8px">CONFIGURATIE</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.6">
-            <div>Agent: <span style="color:var(--text)">DBE Assistent</span></div>
-            <div>Taal: <span style="color:var(--text)">Nederlands</span></div>
-            <div>Model: <span style="color:var(--text)">Claude</span></div>
-            <div>Modus: <span style="color:var(--text)">Knowledge Base</span></div>
-            <div>Features: <span style="color:var(--text)">Chatbot, Content, Dashboard</span></div>
-          </div>
-        </div>
-      </div>`;
+    // Chatbot is now an iframe in the HTML — just show admin link for admins
+    if (state.profile?.membership_tier === 'admin') {
+      const adminLink = document.getElementById('chatbot-admin-link');
+      if (adminLink) adminLink.style.display = '';
+    }
   }
 
   // --- Feature: Admin Dashboard ---
@@ -1984,6 +1970,26 @@ const App = (() => {
         <div class="admin-stat"><div class="admin-stat-value">${totalListings}</div><div class="admin-stat-label">Marktplaats</div></div>
         <div class="admin-stat"><div class="admin-stat-value">${totalMessages}</div><div class="admin-stat-label">Berichten</div></div>
         <div class="admin-stat"><div class="admin-stat-value">${formatSats(totalSats)}</div><div class="admin-stat-label">Totaal sats</div></div>
+      </div>
+
+      <div class="chat-section-label" style="margin-top:20px">mAIxs Platform</div>
+      <div class="admin-grid" style="grid-template-columns:1fr 1fr">
+        <a href="https://maixs-platform-neon.vercel.app/admin" target="_blank" class="meer-item" style="text-decoration:none">
+          <div class="meer-icon">&#129302;</div>
+          <div class="meer-label">AI Assistent beheren</div>
+        </a>
+        <a href="https://maixs-platform-neon.vercel.app/admin/knowledge" target="_blank" class="meer-item" style="text-decoration:none">
+          <div class="meer-icon">&#128218;</div>
+          <div class="meer-label">Knowledge Base</div>
+        </a>
+        <a href="https://maixs-platform-neon.vercel.app/admin/conversations" target="_blank" class="meer-item" style="text-decoration:none">
+          <div class="meer-icon">&#128172;</div>
+          <div class="meer-label">Gesprekken</div>
+        </a>
+        <a href="https://maixs-platform-neon.vercel.app/admin/leads" target="_blank" class="meer-item" style="text-decoration:none">
+          <div class="meer-icon">&#128200;</div>
+          <div class="meer-label">Leads & Analytics</div>
+        </a>
       </div>`;
 
     // Onbeantwoorde vragen

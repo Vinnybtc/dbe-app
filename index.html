@@ -681,14 +681,25 @@
     </div>
   </div>
 
-  <!-- mAIxs Chatbot -->
+  <!-- mAIxs Chatbot (iframe embed) -->
   <div class="screen" id="screen-chatbot">
-    <div class="screen-scroll" style="padding:0;display:flex;flex-direction:column;">
-      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
-        <div class="page-title">DBE Assistent</div>
-        <p class="text-muted" style="font-size:12px;margin-top:4px">Powered by mAIxs</p>
+    <div style="display:flex;flex-direction:column;height:100%">
+      <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div>
+          <div class="page-title" style="margin-bottom:0">DBE Assistent</div>
+          <p class="text-muted" style="font-size:11px;margin-top:2px">Powered by mAIxs</p>
+        </div>
+        <a href="https://maixs-platform-neon.vercel.app/admin" target="_blank" class="btn-outline btn-sm" id="chatbot-admin-link" style="display:none">Admin</a>
       </div>
-      <div id="chatbot-container" style="flex:1;overflow:hidden;"></div>
+      <div id="chatbot-container" style="flex:1;overflow:hidden;">
+        <iframe
+          id="chatbot-iframe"
+          src="https://maixs-platform-neon.vercel.app/chat/e95a8efb-ace3-46cb-89cf-deac0dd74dcc?lang=nl"
+          style="width:100%;height:100%;border:none;background:var(--bg)"
+          allow="microphone"
+          loading="lazy"
+        ></iframe>
+      </div>
     </div>
   </div>
 
@@ -1095,6 +1106,12 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
+</script>
+<!-- mAIxs floating chat widget (rechtsonder op elke pagina) -->
+<script
+  src="https://maixs-platform-neon.vercel.app/widget.js"
+  data-org-id="e95a8efb-ace3-46cb-89cf-deac0dd74dcc"
+  async>
 </script>
 </body>
 </html>
