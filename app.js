@@ -2101,21 +2101,8 @@ const App = (() => {
     // Search listener
     document.getElementById('member-search').addEventListener('input', filterMembers);
 
-    if (DEV_MODE) {
-      // Dev mode: skip login, ga direct naar de app
-      devLogin();
-    } else {
-      // Auth state listener
-      supabase.auth.onAuthStateChange(handleAuthChange);
-
-      // Check bestaande sessie
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) handleAuthChange('SIGNED_IN', session);
-      });
-
-      // Init LNURL
-      Auth.init();
-    }
+    // Altijd direct in de app (login overgeslagen)
+    devLogin();
 
     // Logout
     document.getElementById('btn-logout').addEventListener('click', async () => {
